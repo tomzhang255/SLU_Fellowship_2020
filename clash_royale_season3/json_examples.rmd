@@ -1,0 +1,42 @@
+---
+title: "JSON Formatted Data"
+author: "Stat 3007"
+date: "10/29/2019"
+output: html_document
+---
+
+This is a very short tutorial to introduce the JSON format. We will use a dataset intended for your Clash Royale project.
+
+## Wikipedia definition of JSON
+> JavaScript Object Notation (JSON, pronounced ("Jason") is an open-standard file format that uses human-readable text to transmit data objects consisting of attribute–value pairs and array data types (or any other serializable value). It is a very common data format, with a diverse range of applications, such as serving as replacement for XML in AJAX systems.
+
+> JSON is a language-independent data format. It was derived from JavaScript, but many modern programming languages include code to generate and parse JSON-format data. The official Internet media type for JSON is application/json. JSON filenames use the extension .json.
+
+## Working with JSON data in R
+
+Let's start by opening the file ``clash_royale_card_info.json``. First, lets just take a look at the raw structure of the file. Do so by clicking on the file in the Files pane. This should open a tab with the file.
+
+Notice that it has a very non-rectanglar structure to it. JSON formatted files are actually (or usually) nicely formatted files that contain a hierarchical/tree-like structure to storing their information. (Unfortunately, while a good way to store data of this type, it can be awkward to use in R.) Lucky for us, there are several online JSON viewing programs available to see the structure of the file. My current favorite is https://codebeautify.org/jsonviewer Please open that link now and copy/paste the entire donuts.json file in the left window. While this website has some nice features to help make the data more readily usable in standard statistical procedures, R also has packages to assist. In particular, the ``jsonlite`` package is useful. To load a JSON file into R, use...
+
+```{r}
+library(jsonlite)
+# modify this!
+cr_cards <- fromJSON("clash_royale_card_info.json")
+```
+
+Notice that cr_cards is a list containing one item...a data frame with our card information. One way to extract this information is to use the ``flatten`` function from ``jsonlite``.
+
+```{r}
+library(tidyverse) # just to do a few other things too
+cr_cards_flat <- flatten(cr_cards)
+cr_cards_df <- as.tibble(cr_cards_flat)
+cr_cards_df
+```
+
+Thats it for this file!
+
+## Working with more complex structures
+
+Not all JSON files are as clean as ours.
+
+
