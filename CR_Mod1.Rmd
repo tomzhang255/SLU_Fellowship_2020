@@ -1,0 +1,49 @@
+---
+title: "CR_Mod1"
+author: "Tom Zhang"
+date: "5/19/2020"
+output: html_document
+---
+
+## Importing cr matches data
+```{r}
+library(DBI)
+
+# connect to db
+con <- dbConnect(drv=RSQLite::SQLite(), dbname="clash_royale_season3/cr_season3_subset.sqlite")
+
+# list all tables
+tables <- dbListTables(con)
+
+# exclude sqlite_sequence (contains table information)
+tables <- tables[tables != "sqlite_sequence"]
+
+cr_s3 <- vector("list", length=length(tables))
+
+# create a data.frame for each table
+for (i in seq(along=tables)) {
+  cr_s3[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
+}
+
+# from list to data frame
+library(tidyverse)
+cr_s3_flat <- flatten(cr_s3)
+cr_s3_df <- as.tibble(cr_s3_flat)
+
+# disconnect from database
+dbDisconnect(con)
+```
+
+## Building model
+```{r}
+cr_s3_df
+```
+
+
+
+
+
+
+
+
+
