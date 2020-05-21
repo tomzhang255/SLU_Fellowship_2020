@@ -218,8 +218,8 @@ cr_s3_df_lvlAdj_left
 # first experiment with only a subset df
 df1 <-
   cr_s3_df_lvlAdj_left %>%
-  select(c(1, 10:25)) #%>%
-  #slice(1:2000) # only the first 2000 rows
+  select(c(1, 10:25)) %>%
+  slice(1:200) # only the first few rows
 
 # cleaning up cards with separate_rows()
 deck <- 
@@ -277,15 +277,25 @@ lvl
 ### Took 50 sec to run 200 original cases
 ### Took 15 min to run 2000 original cases
 ```{r}
+# start timer
+start_time <- Sys.time()
+
+
+
 # replace 1's with column name, which is card & level
-for (y in 1:ncol(lvl)) {
+for (y in 2:ncol(lvl)) {
+  lvl[[y]] = as.character(lvl[[y]])
   for (x in 1:nrow(lvl)) {
-    if (lvl[x,y] == 1) {
-      lvl[[y]] = as.character(lvl[[y]])
+    if (lvl[x,y] == "1") {
       lvl[x,y] = names(lvl)[y]
     }
   }
 }
+
+
+
+# stop timer
+end_time <- Sys.time()
 
 # drop card names; keep only the card levels
 lvl <-
@@ -305,21 +315,9 @@ names(lvl) <- paste(names(lvl), "Lvl")
 names(lvl)[1] <- "id"
 
 lvl
-```
 
-
-## Addressing a bug that the previous for loop creates (when 1 is actually the id number)
-```{r}
-# recode id column of lvl df
-for (z in 1:nrow(lvl)) {
-  if (lvl[z,1] == "id") {
-      lvl[z,1] = "1"
-    }
-}
-
-lvl$id = as.numeric(lvl$id)
-
-lvl
+# time elapsed
+end_time - start_time
 ```
 
 
@@ -363,6 +361,10 @@ Simplified version:
 using linear regression to model trophies
   cards used in a player’s deck
   level of their cards
+
+```{r}
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+```
 
 ```{r}
 df_mod1 <-
