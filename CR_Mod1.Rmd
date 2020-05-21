@@ -218,8 +218,8 @@ cr_s3_df_lvlAdj_left
 # first experiment with only a subset df
 df1 <-
   cr_s3_df_lvlAdj_left %>%
-  select(c(1, 10:25)) %>%
-  slice(1:200) # only the first few rows
+  select(c(1, 10:25)) #%>%
+  #slice(1:200) # only the first few rows
 
 # cleaning up cards with separate_rows()
 deck <- 
