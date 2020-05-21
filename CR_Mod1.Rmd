@@ -4,7 +4,7 @@ author: "Tom Zhang"
 date: "5/19/2020"
 output: html_document
 ---
-## Note: subseted data - 200 cases with indicators (see line 221) - took 8 min to run
+## Note: subseted data - 200 cases with indicators (see line 222) - took 8 min to run
 
 ## Importing cr card info data
 ```{r}
@@ -349,7 +349,13 @@ using linear regression to model trophies
   level of their cards
 
 ```{r}
+df_mod1 <-
+  cr_s3_df_ind_left %>%
+    select(-1:-5) %>%
+    select(-2:-20)
 
+mod1 <- lm(leftstartingtrophies ~ ., data = df_mod1)
+summary(mod1)
 ```
 
 
