@@ -4,7 +4,7 @@ author: "Tom Zhang"
 date: "5/19/2020"
 output: html_document
 ---
-## Note: subseted data - 200 cases with indicators (see line 222) - took 8 min to run
+## Note: subseted data - 2000 cases with indicators (see line 222) - took 15 min to run
 
 ## Importing cr card info data
 ```{r}
@@ -219,7 +219,7 @@ cr_s3_df_lvlAdj_left
 df1 <-
   cr_s3_df_lvlAdj_left %>%
   select(c(1, 10:25)) %>%
-  slice(1:200) # only the first 200 rows - 8 minutes to run
+  slice(1:2000) # only the first 2000 rows
 
 # cleaning up cards with separate_rows()
 deck <- 
@@ -265,13 +265,17 @@ names(lvl) <- str_remove_all(names(lvl), "lvl\\$cardLvl|\\.|,\\s")
 lvl <- 
   lvl %>%
   group_by(id) %>%
-  mutate_if(is.numeric, sum) 
+  mutate_if(is.numeric, sum) %>%
+  select(-2) %>%
+  group_by(id) %>%
+  slice(1)
 
 lvl
 ```
 
 ## Transforming card level indicators into actual levels - time consuming
-### Took 8 min to run 200 original cases
+### Took 50 sec to run 200 original cases
+### Took 15 min to run 2000 original cases
 ```{r}
 # replace 1's with column name, which is card & level
 for (y in 1:ncol(lvl)) {
@@ -291,9 +295,6 @@ lvl <-
 # merge all columns representing the same card, but different levels
 lvl <-
   lvl %>%
-    select(-2) %>%
-    group_by(id) %>%
-    slice(1) %>%
     gather(-1, key = "cards", value = "level") %>%
     mutate(cards = str_remove_all(cards, "[:digit:]")) %>%
     group_by(id, cards) %>%
