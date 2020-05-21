@@ -4,6 +4,7 @@ author: "Tom Zhang"
 date: "5/19/2020"
 output: html_document
 ---
+## Note: subseted data - 200 cases with indicators (see line 221) - took 8 min to run
 
 ## Importing cr card info data
 ```{r}
@@ -202,6 +203,134 @@ cr_s3_df %>%
 
 # finally, select the columns we need / clean up dataset
   select(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 63, 12, 64, 14, 65, 16, 66, 18, 67, 20, 68, 22, 69, 24, 70, 26, 27, 28, 29, 30, 31, 71, 33, 72, 35, 73, 37, 74, 39, 75, 41, 76, 43, 77, 45, 78))
+
+# now, keep only left deck information
+cr_s3_df_lvlAdj_left <-
+cr_s3_df_lvlAdj %>%
+  select(1:25)
+
+cr_s3_df_lvlAdj_left
+```
+
+
+## Creating indicator variables for cards and levels
+```{r}
+# first experiment with only a subset df
+df1 <-
+  cr_s3_df_lvlAdj_left %>%
+  select(c(1, 10:25)) %>%
+  slice(1:200) # only the first 200 rows - 8 minutes to run
+
+# cleaning up cards with separate_rows()
+deck <- 
+  df1 %>%
+    unite(c(2, 4, 6, 8, 10, 12, 14, 16), col = "card", sep = ", ") %>%
+    separate_rows(card, sep = ", ") %>%
+    select(1:2)
+
+# preparing level column
+lvl <-
+  df1 %>%
+    unite(c(3, 5, 7, 9, 11, 13, 15, 17), col = "lvl", sep = ", ") %>%
+    separate_rows(lvl, sep = ", ") %>%
+    select(3)
+
+lvl <- bind_cols(deck, lvl)
+
+# creating indicator variables for cards
+deck$card <- factor(deck$card)
+dummies <- model.matrix(~ -1 + deck$card)
+
+deck <- bind_cols(deck, as_data_frame(dummies))
+
+names(deck) = str_remove_all(names(deck), "deck\\$card")
+
+deck <- 
+  deck %>%
+  group_by(id) %>%
+  mutate_if(is.numeric, sum)
+
+deck
+
+# dummies for levels
+lvl <- unite(lvl, -1, col = "cardLvl", sep = ", ")
+
+lvl$cardLvl <- factor(lvl$cardLvl)
+dummies <- model.matrix(~ -1 + lvl$cardLvl)
+
+lvl <- bind_cols(lvl, as_data_frame(dummies))
+
+names(lvl) <- str_remove_all(names(lvl), "lvl\\$cardLvl|\\.|,\\s")
+
+lvl <- 
+  lvl %>%
+  group_by(id) %>%
+  mutate_if(is.numeric, sum) 
+
+lvl
+```
+
+## Transforming card level indicators into actual levels - time consuming
+### Took 8 min to run 200 original cases
+```{r}
+# replace 1's with column name, which is card & level
+for (y in 1:ncol(lvl)) {
+  for (x in 1:nrow(lvl)) {
+    if (lvl[x,y] == 1) {
+      lvl[[y]] = as.character(lvl[[y]])
+      lvl[x,y] = names(lvl)[y]
+    }
+  }
+}
+
+# drop card names; keep only the card levels
+lvl <-
+  lvl %>%
+    mutate_if(is.character, parse_number)
+
+# merge all columns representing the same card, but different levels
+lvl <-
+  lvl %>%
+    select(-2) %>%
+    group_by(id) %>%
+    slice(1) %>%
+    gather(-1, key = "cards", value = "level") %>%
+    mutate(cards = str_remove_all(cards, "[:digit:]")) %>%
+    group_by(id, cards) %>%
+    summarise(level = sum(level)) %>%
+    spread(cards, level)
+
+names(lvl) <- paste(names(lvl), "Lvl")
+names(lvl)[1] <- "id"
+
+lvl
+```
+
+
+## Merge deck df and level df
+```{r}
+deck <-
+  deck %>%
+    select(-2) %>%
+    group_by(id) %>%
+    slice(1)
+
+deckLvl <- left_join(deck, lvl, by = "id")
+
+deckLvl
+```
+
+
+## Join cleaned original df with deck/lvl df for only left deck
+```{r}
+cr_s3_df_ind_left <- left_join(cr_s3_df_lvlAdj_left, deckLvl, by = "id")
+cr_s3_df_ind_left
+```
+
+
+## Saving fianl df
+```{r}
+write_csv(cr_s3_df_ind_left, path = "data/cr_s3_df_ind_left.csv")
 ```
 
 
@@ -216,6 +345,8 @@ logistic regression model
 
 Simplified version:
 using linear regression to model trophies
+  cards used in a player’s deck
+  level of their cards
 
 ```{r}
 
