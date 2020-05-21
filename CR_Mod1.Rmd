@@ -218,8 +218,8 @@ cr_s3_df_lvlAdj_left
 # first experiment with only a subset df
 df1 <-
   cr_s3_df_lvlAdj_left %>%
-  select(c(1, 10:25)) %>%
-  slice(1:2000) # only the first 2000 rows
+  select(c(1, 10:25)) #%>%
+  #slice(1:2000) # only the first 2000 rows
 
 # cleaning up cards with separate_rows()
 deck <- 
@@ -260,7 +260,7 @@ dummies <- model.matrix(~ -1 + lvl$cardLvl)
 
 lvl <- bind_cols(lvl, as_data_frame(dummies))
 
-names(lvl) <- str_remove_all(names(lvl), "lvl\\$cardLvl|\\.|,\\s")
+names(lvl) <- str_remove_all(names(lvl), "lvl\\$cardLvl|\\.|,\\s|-") # important!!! for parse_number()
 
 lvl <- 
   lvl %>%
@@ -303,6 +303,21 @@ lvl <-
 
 names(lvl) <- paste(names(lvl), "Lvl")
 names(lvl)[1] <- "id"
+
+lvl
+```
+
+
+## Addressing a bug that the previous for loop creates (when 1 is actually the id number)
+```{r}
+# recode id column of lvl df
+for (z in 1:nrow(lvl)) {
+  if (lvl[z,1] == "id") {
+      lvl[z,1] = "1"
+    }
+}
+
+lvl$id = as.numeric(lvl$id)
 
 lvl
 ```
@@ -358,10 +373,6 @@ df_mod1 <-
 mod1 <- lm(leftstartingtrophies ~ ., data = df_mod1)
 summary(mod1)
 ```
-
-
-
-
 
 
 
