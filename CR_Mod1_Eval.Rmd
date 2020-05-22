@@ -8,6 +8,7 @@ output: html_document
 ## Fitting linear regression model
 ```{r}
 library(tidyverse)
+library(broom)
 cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
 ```
 
@@ -24,7 +25,8 @@ df_mod1 <-
 ## The model
 ```{r}
 mod1 <- lm(leftstartingtrophies ~ ., data = df_mod1)
-summary(mod1)
+#summary(mod1)
+tidy(mod1)
 ```
 
 
