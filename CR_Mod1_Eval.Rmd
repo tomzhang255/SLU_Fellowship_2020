@@ -1,0 +1,51 @@
+---
+title: "CR_Mod1_Eval"
+author: "Tom Zhang"
+date: "5/21/2020"
+output: html_document
+---
+
+## Fitting linear regression model
+```{r}
+library(tidyverse)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+```
+
+
+## Cleaning up data
+```{r}
+df_mod1 <-
+  cr_s3_df_ind_left %>%
+    select(-1:-5) %>%
+    select(-2:-20)
+```
+
+
+## The model
+```{r}
+mod1 <- lm(leftstartingtrophies ~ ., data = df_mod1)
+summary(mod1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
