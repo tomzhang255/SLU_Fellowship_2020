@@ -273,6 +273,7 @@ lvl <-
 lvl
 ```
 
+
 ## Transforming card level indicators into actual levels - time consuming
 ### Took 50 sec to run 200 original cases
 ### Took 15 min to run 2000 original cases
