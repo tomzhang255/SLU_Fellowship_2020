@@ -1,0 +1,352 @@
+---
+title: "CR_Card_Level_Investigation"
+author: "Tom Zhang"
+date: "5/26/2020"
+output: html_document
+---
+
+## Importing cr card info data
+```{r}
+library(jsonlite)
+library(tidyverse)
+cr_cards_list <- fromJSON("clash_royale_season3/clash_royale_card_info.json")
+cr_cards_flat <- flatten(cr_cards_list)
+cr_cards_df <- as.tibble(cr_cards_flat)
+```
+
+
+## Importing cr matches data
+```{r}
+library(DBI)
+
+# connect to db
+con <- dbConnect(drv=RSQLite::SQLite(), dbname="clash_royale_season3/cr_season3_subset.sqlite")
+
+# list all tables
+tables <- dbListTables(con)
+
+# exclude sqlite_sequence (contains table information)
+tables <- tables[tables != "sqlite_sequence"]
+
+cr_s3_list <- vector("list", length=length(tables))
+
+# create a data.frame for each table
+for (i in seq(along=tables)) {
+  cr_s3_list[[i]] <- dbGetQuery(conn=con, statement=paste("SELECT * FROM '", tables[[i]], "'", sep=""))
+}
+
+# from list to data frame
+library(tidyverse)
+cr_s3_flat <- flatten(cr_s3_list)
+cr_s3_df <- as_tibble(cr_s3_flat)
+
+# disconnect from database
+dbDisconnect(con)
+```
+
+
+## Cleaning up cr matches data & implementing level adjustment
+```{r}
+cr_s3_df_lvlAdj <-
+# card / level separation
+cr_s3_df %>%
+  mutate(
+    leftdeck = str_remove_all(leftdeck, "[\\[\\]\"]"),
+    rightdeck = str_remove_all(rightdeck, "[\\[\\]\"]"),
+    leftdeckCopy = leftdeck,
+    rightdeckCopy = rightdeck
+    ) %>%
+  separate(leftdeck, sep = ", ", into = c("leftCard1", "leftLvl1", "leftCard2", "leftLvl2", "leftCard3", "leftLvl3", "leftCard4", "leftLvl4", "leftCard5", "leftLvl5", "leftCard6", "leftLvl6", "leftCard7", "leftLvl7", "leftCard8", "leftLvl8")) %>%
+  separate(rightdeck, sep = ", ", into = c("rightCard1", "rightLvl1", "rightCard2", "rightLvl2", "rightCard3", "rightLvl3", "rightCard4", "rightLvl4", "rightCard5", "rightLvl5", "rightCard6", "rightLvl6", "rightCard7", "rightLvl7", "rightCard8", "rightLvl8")) %>%
+
+# adding corresponding rarity info
+
+
+
+
+# for left deck
+  mutate(
+    leftdeckCopy = str_remove_all(leftdeckCopy, ",\\s[:digit:]+"),
+
+# addressing a few conflicts:
+# Cannon, Cannon Cart, Giant, Giant Skeleton, Giant Snowball, Goblin Giant, Royal Giant, Goblins, Spear Goblins, Golem, Ice Golem, Wizard, Ice Wizard, Electro Wizard, Knight, Mega Knight, P.E.K.K.A, Mini P.E.K.K.A, Witch, Night Witch, Prince, Dark Prince, Princess, Musketeer, Three Musketeers, Zap, Zappies
+
+# including cards not in the cr_cards_df dataset:
+# *Heal, *Heal Spirit, *Battle Healer, *Elixir Golem
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Giant Snowball|Royal Giant|Spear Goblins", "Common"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Ice Golem|Mini P.E.K.K.A|Three Musketeers|Zappies|Heal Spirit|Battle Healer|Elixir Golem", "Rare"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Cannon Cart|Giant Skeleton|Goblin Giant|Dark Prince", "Epic"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Ice Wizard|Electro Wizard|Mega Knight|Night Witch|Princess", "Legendary"),
+    
+# the four rarity categories - according to cr_cards_df
+
+# and cards not in the cr_cards_df dataset
+# Fisherman, *Heal changed to Heal Spirit, *Elixir Golem, *Battle Healer, Firecracker, Royal Delivery
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Knight|Archers|Goblins|Minions|Barbarians|Skeletons|Bomber|Spear Goblins|Minion Horde|Royal Giant|Ice Spirit|Fire Spirits|Goblin Gang|Elite Barbarians|Royal Recruits|Bats|Rascals|Skeleton Barrel|Cannon|Mortar|Tesla|Arrows|Zap|Giant Snowball|Firecracker|Royal Delivery", "Common"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Giant|Valkyrie|Musketeer|Wizard|Mini P.E.K.K.A|Hog Rider|Three Musketeers|Battle Ram|Ice Golem|Mega Minion|Dart Goblin|Zappies|Flying Machine|Royal Hogs|Goblin Hut|Inferno Tower|Bomb Tower|Barbarian Hut|Elixir Collector|Tombstone|Furnace|Goblin Cage|Fireball|Rocket|Earthquake|Heal", "Rare"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "P.E.K.K.A|Balloon|Witch|Golem|Skeleton Army|Baby Dragon|Prince|Giant Skeleton|Guards|Dark Prince|Bowler|Hunter|Executioner|Cannon Cart|Wall Breakers|Goblin Giant|Electro Dragon|X-Bow|Rage|Goblin Barrel|Freeze|Mirror|Lightning|Poison|Tornado|Clone|Barbarian Barrel", "Epic"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Ice Wizard|Princess|Lava Hound|Miner|Sparky|Lumberjack|Inferno Dragon|Electro Wizard|Bandit|Night Witch|Royal Ghost|Ram Rider|Mega Knight|Magic Archer|Graveyard|The Log|Fisherman", "Legendary"),
+
+# match rarity info with level adjustment
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Common", "0"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Rare", "2"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Epic", "5"),
+    leftdeckCopy = str_replace_all(leftdeckCopy, "Legendary", "8")
+  ) %>%
+
+# separating level adjustment
+  separate(leftdeckCopy, sep = ", ", into = c("leftLvlAdj1", "leftLvlAdj2", "leftLvlAdj3", "leftLvlAdj4", "leftLvlAdj5", "leftLvlAdj6", "leftLvlAdj7", "leftLvlAdj8")) %>%
+
+# first transform all levels and their adjustments to numeric rather than character
+  mutate(
+    leftLvl1 = parse_integer(leftLvl1),
+    leftLvl2 = parse_integer(leftLvl2),
+    leftLvl3 = parse_integer(leftLvl3),
+    leftLvl4 = parse_integer(leftLvl4),
+    leftLvl5 = parse_integer(leftLvl5),
+    leftLvl6 = parse_integer(leftLvl6),
+    leftLvl7 = parse_integer(leftLvl7),
+    leftLvl8 = parse_integer(leftLvl8),
+    leftLvlAdj1 = parse_integer(leftLvlAdj1),
+    leftLvlAdj2 = parse_integer(leftLvlAdj2),
+    leftLvlAdj3 = parse_integer(leftLvlAdj3),
+    leftLvlAdj4 = parse_integer(leftLvlAdj4),
+    leftLvlAdj5 = parse_integer(leftLvlAdj5),
+    leftLvlAdj6 = parse_integer(leftLvlAdj6),
+    leftLvlAdj7 = parse_integer(leftLvlAdj7),
+    leftLvlAdj8 = parse_integer(leftLvlAdj8)
+  ) %>%
+
+# now add left card levels with their corresponding adjustments
+  mutate(
+    leftAdjLvl1 = leftLvl1 + leftLvlAdj1, # adjusted level = original level + level adjustment
+    leftAdjLvl2 = leftLvl2 + leftLvlAdj2,
+    leftAdjLvl3 = leftLvl3 + leftLvlAdj3,
+    leftAdjLvl4 = leftLvl4 + leftLvlAdj4,
+    leftAdjLvl5 = leftLvl5 + leftLvlAdj5,
+    leftAdjLvl6 = leftLvl6 + leftLvlAdj6,
+    leftAdjLvl7 = leftLvl7 + leftLvlAdj7,
+    leftAdjLvl8 = leftLvl8 + leftLvlAdj8
+  ) %>%
+
+
+
+
+# now do exactly the same thing for the right deck
+  mutate(
+    rightdeckCopy = str_remove_all(rightdeckCopy, ",\\s[:digit:]+"),
+
+# addressing a few conflicts:
+# Cannon, Cannon Cart, Giant, Giant Skeleton, Giant Snowball, Goblin Giant, Royal Giant, Goblins, Spear Goblins, Golem, Ice Golem, Wizard, Ice Wizard, Electro Wizard, Knight, Mega Knight, P.E.K.K.A, Mini P.E.K.K.A, Witch, Night Witch, Prince, Dark Prince, Princess, Musketeer, Three Musketeers, Zap, Zappies
+
+# including cards not in the cr_cards_df dataset:
+# *Heal, *Heal Spirit, *Battle Healer, *Elixir Golem
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Giant Snowball|Royal Giant|Spear Goblins", "Common"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Ice Golem|Mini P.E.K.K.A|Three Musketeers|Zappies|Heal Spirit|Battle Healer|Elixir Golem", "Rare"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Cannon Cart|Giant Skeleton|Goblin Giant|Dark Prince", "Epic"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Ice Wizard|Electro Wizard|Mega Knight|Night Witch|Princess", "Legendary"),
+    
+# the four rarity categories - according to cr_cards_df
+
+# and cards not in the cr_cards_df dataset
+# Fisherman, *Heal changed to Heal Spirit, *Elixir Golem, *Battle Healer, Firecracker, Royal Delivery
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Knight|Archers|Goblins|Minions|Barbarians|Skeletons|Bomber|Spear Goblins|Minion Horde|Royal Giant|Ice Spirit|Fire Spirits|Goblin Gang|Elite Barbarians|Royal Recruits|Bats|Rascals|Skeleton Barrel|Cannon|Mortar|Tesla|Arrows|Zap|Giant Snowball|Firecracker|Royal Delivery", "Common"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Giant|Valkyrie|Musketeer|Wizard|Mini P.E.K.K.A|Hog Rider|Three Musketeers|Battle Ram|Ice Golem|Mega Minion|Dart Goblin|Zappies|Flying Machine|Royal Hogs|Goblin Hut|Inferno Tower|Bomb Tower|Barbarian Hut|Elixir Collector|Tombstone|Furnace|Goblin Cage|Fireball|Rocket|Earthquake|Heal", "Rare"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "P.E.K.K.A|Balloon|Witch|Golem|Skeleton Army|Baby Dragon|Prince|Giant Skeleton|Guards|Dark Prince|Bowler|Hunter|Executioner|Cannon Cart|Wall Breakers|Goblin Giant|Electro Dragon|X-Bow|Rage|Goblin Barrel|Freeze|Mirror|Lightning|Poison|Tornado|Clone|Barbarian Barrel", "Epic"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Ice Wizard|Princess|Lava Hound|Miner|Sparky|Lumberjack|Inferno Dragon|Electro Wizard|Bandit|Night Witch|Royal Ghost|Ram Rider|Mega Knight|Magic Archer|Graveyard|The Log|Fisherman", "Legendary"),
+
+# match rarity info with level adjustment
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Common", "0"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Rare", "2"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Epic", "5"),
+    rightdeckCopy = str_replace_all(rightdeckCopy, "Legendary", "8")
+  ) %>%
+
+# separating level adjustment
+  separate(rightdeckCopy, sep = ", ", into = c("rightLvlAdj1", "rightLvlAdj2", "rightLvlAdj3", "rightLvlAdj4", "rightLvlAdj5", "rightLvlAdj6", "rightLvlAdj7", "rightLvlAdj8")) %>%
+
+# first transform all levels and their adjustments to numeric rather than character
+  mutate(
+    rightLvl1 = parse_integer(rightLvl1),
+    rightLvl2 = parse_integer(rightLvl2),
+    rightLvl3 = parse_integer(rightLvl3),
+    rightLvl4 = parse_integer(rightLvl4),
+    rightLvl5 = parse_integer(rightLvl5),
+    rightLvl6 = parse_integer(rightLvl6),
+    rightLvl7 = parse_integer(rightLvl7),
+    rightLvl8 = parse_integer(rightLvl8),
+    rightLvlAdj1 = parse_integer(rightLvlAdj1),
+    rightLvlAdj2 = parse_integer(rightLvlAdj2),
+    rightLvlAdj3 = parse_integer(rightLvlAdj3),
+    rightLvlAdj4 = parse_integer(rightLvlAdj4),
+    rightLvlAdj5 = parse_integer(rightLvlAdj5),
+    rightLvlAdj6 = parse_integer(rightLvlAdj6),
+    rightLvlAdj7 = parse_integer(rightLvlAdj7),
+    rightLvlAdj8 = parse_integer(rightLvlAdj8)
+  ) %>%
+
+# now add left card levels with their corresponding adjustments
+  mutate(
+    rightAdjLvl1 = rightLvl1 + rightLvlAdj1, # adjusted level = original level + level adjustment
+    rightAdjLvl2 = rightLvl2 + rightLvlAdj2,
+    rightAdjLvl3 = rightLvl3 + rightLvlAdj3,
+    rightAdjLvl4 = rightLvl4 + rightLvlAdj4,
+    rightAdjLvl5 = rightLvl5 + rightLvlAdj5,
+    rightAdjLvl6 = rightLvl6 + rightLvlAdj6,
+    rightAdjLvl7 = rightLvl7 + rightLvlAdj7,
+    rightAdjLvl8 = rightLvl8 + rightLvlAdj8
+  ) %>%
+
+
+
+
+# finally, select the columns we need / clean up dataset
+  select(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 63, 12, 64, 14, 65, 16, 66, 18, 67, 20, 68, 22, 69, 24, 70, 26, 27, 28, 29, 30, 31, 71, 33, 72, 35, 73, 37, 74, 39, 75, 41, 76, 43, 77, 45, 78))
+
+# now, keep only left deck information
+cr_s3_df_lvlAdj_left <-
+cr_s3_df_lvlAdj %>%
+  select(1:25)
+
+cr_s3_df_lvlAdj_left
+```
+
+
+## Creating indicator variables for cards and levels
+```{r}
+# first experiment with only a subset df
+df1 <-
+  cr_s3_df_lvlAdj_left %>%
+  select(c(1, 10:25)) #%>%
+  #slice(1:200) # only the first few rows
+
+# cleaning up cards with separate_rows()
+deck <- 
+  df1 %>%
+    unite(c(2, 4, 6, 8, 10, 12, 14, 16), col = "card", sep = ", ") %>%
+    separate_rows(card, sep = ", ") %>%
+    select(1:2)
+
+# preparing level column
+lvl <-
+  df1 %>%
+    unite(c(3, 5, 7, 9, 11, 13, 15, 17), col = "lvl", sep = ", ") %>%
+    separate_rows(lvl, sep = ", ") %>%
+    select(3)
+
+lvl <- bind_cols(deck, lvl)
+
+# creating indicator variables for cards
+deck$card <- factor(deck$card)
+dummies <- model.matrix(~ -1 + deck$card)
+
+deck <- bind_cols(deck, as_data_frame(dummies))
+
+names(deck) = str_remove_all(names(deck), "deck\\$card")
+
+deck <- 
+  deck %>%
+  group_by(id) %>%
+  mutate_if(is.numeric, sum) %>%
+  select(-2) %>%
+  group_by(id) %>%
+  slice(1)
+
+deck
+
+# dummies for levels
+lvl <- unite(lvl, -1, col = "cardLvl", sep = ", ")
+
+lvl$cardLvl <- factor(lvl$cardLvl)
+dummies <- model.matrix(~ -1 + lvl$cardLvl)
+
+lvl <- bind_cols(lvl, as_data_frame(dummies))
+
+names(lvl) <- str_remove_all(names(lvl), "lvl\\$cardLvl|\\.|,\\s|-") # important!!! for parse_number()
+
+lvl <- 
+  lvl %>%
+  group_by(id) %>%
+  mutate_if(is.numeric, sum) %>%
+  select(-2) %>%
+  group_by(id) %>%
+  slice(1)
+
+lvl
+
+# merge deck df and lvl df
+deckLvl <- left_join(deck, lvl, by = "id")
+
+deckLvl
+```
+
+
+## Join cleaned original df with deck/lvl df for only left deck
+```{r}
+cr_s3_df_indLvl_left <- left_join(cr_s3_df_lvlAdj_left, deckLvl, by = "id")
+cr_s3_df_indLvl_left
+```
+
+
+## Saving fianl df
+```{r}
+write_csv(cr_s3_df_indLvl_left, path = "data/cr_s3_df_indLvl_left.csv")
+```
+
+
+## Building model - extended Lvl indicators
+```{r}
+library(broom)
+cr_s3_df_indLvl_left <- read_csv("data/cr_s3_df_indLvl_left.csv")
+```
+
+
+```{r}
+df_mod1_extended <-
+  cr_s3_df_indLvl_left %>%
+    select(-1:-5) %>%
+    select(-2:-20)
+
+mod1_extended <- lm(leftstartingtrophies ~ ., data = df_mod1_extended)
+
+coefs <- tidy(mod1_extended)
+```
+
+
+## clean up coefficients for Shiny
+```{r}
+coefs_clean <-
+coefs %>%
+  slice(-1:-94) %>%
+  select(1:2) %>%
+  mutate(Level = term, Card = term, Slope = estimate) %>%
+  mutate(Level = parse_number(Level), Card = str_remove_all(Card, "[[:digit:]`]")) %>%
+  select(4,3,5)
+
+coefs_clean
+
+# Save df
+write_csv(coefs_clean, path = "data/coefs_clean.csv")
+```
+
+
+```{r}
+coefs_clean %>%
+  slice(1:9) %>% # only look at archers
+  ggplot(., aes(x = Level, y = Slope)) +
+  geom_point() +
+  geom_smooth(se = F)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
