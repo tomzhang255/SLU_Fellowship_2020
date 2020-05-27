@@ -1,0 +1,12 @@
+name: Shiny_Mod1
+title: Shiny_Mod1
+username:
+account: tomzhang0719
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2367216
+bundleId: 3197552
+url: https://tomzhang0719.shinyapps.io/Shiny_Mod1/
+when: 1590613982.95812
+asMultiple: FALSE
+asStatic: FALSE
