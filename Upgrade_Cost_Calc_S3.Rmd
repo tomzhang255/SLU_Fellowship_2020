@@ -1,0 +1,78 @@
+---
+title: "Upgrade Cost Calculation"
+author: "Tom Zhang"
+date: "5/28/2020"
+output: html_document
+---
+
+## Cards rarity df
+```{r}
+library(jsonlite)
+library(tidyverse)
+cr_cards_list <- fromJSON("clash_royale_season3/clash_royale_card_info.json")
+cr_cards_flat <- flatten(cr_cards_list)
+cr_cards_df <- as.tibble(cr_cards_flat)
+```
+
+```{r}
+# subset and add in fisherman
+cr_cards_rarity <-
+  cr_cards_df %>%
+    select(name, rarity)
+
+cr_cards_rarity <- bind_rows(cr_cards_rarity, tibble(Name = "Fisherman", rarity = "Legendary"))
+
+# save df
+write_csv(cr_cards_rarity, "data/cr_cards_rarity.csv")
+```
+
+## Upgrade cost df
+```{r}
+cr_upgrade_cost <- tibble(
+  Level = c(1:13),
+  Common = c(NA, 5, 20, 50, 150, 400, 1000, 2000, 4000, 8000, 20000, 50000, 100000),
+  Rare = c(NA, NA, NA, 50, 150, 400, 1000, 2000, 4000, 8000, 20000, 50000, 100000),
+  Epic = c(NA, NA, NA, NA, NA, NA, 400, 2000, 4000, 8000, 20000, 50000, 100000),
+  Legendary = c(NA, NA, NA, NA, NA, NA, NA, NA, NA, 5000, 20000, 50000, 100000)
+)
+
+# save df
+write_csv(cr_upgrade_cost, "data/cr_upgrade_cost.csv")
+```
+
+## Upgrade Cost Calculation Function
+```{r}
+costCalc <- function(cardName, currentLvl, upgradeLvl) {
+  # extract rarity info
+  cardRarity <-
+    cr_cards_rarity %>%
+      filter(name == cardName)
+  cardRarity <- cardRarity$rarity
+  
+  # calculate cost
+  if (upgradeLvl > currentLvl) {
+    cost <-
+    cr_upgrade_cost %>%
+      select(contains(cardRarity)) %>%
+      slice((currentLvl + 1):(upgradeLvl)) %>%
+      sum(na.rm = T)
+    return(cost)
+  } else {
+    return(0)
+  }
+}
+```
+
+## testing
+```{r}
+costCalc("Wizard", 9, 12)
+```
+
+
+
+
+
+
+
+
+

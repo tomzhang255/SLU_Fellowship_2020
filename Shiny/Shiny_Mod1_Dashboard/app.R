@@ -30,6 +30,10 @@ cards <-
   select(!ends_with(" Lvl")) %>%
   names(.)
 
+# for upgrade cost calculation
+cr_cards_rarity <- read_csv("cr_cards_rarity.csv")
+cr_upgrade_cost <- read_csv("cr_upgrade_cost.csv")
+
 
 
 # the app
@@ -38,6 +42,7 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
+      menuItem("Version 3", tabName = "v3", icon = icon("file-code")),
       menuItem("Version 2", tabName = "v2", icon = icon("file-code")),
       menuItem("Version 1", tabName = "v1", icon = icon("file-code"))
     )
@@ -156,11 +161,90 @@ ui <- dashboardPage(
           ),
           column(4, plotOutput(outputId = "bar"))
         )
+      ),
+      
+      
+      
+      # v3 tab content
+      tabItem(
+        tabName = "v3",
+        fluidRow(
+          column(
+            12,
+            tags$h1("\tPredicting Trophies (Clash Royale Season 3)"),
+            tags$h2("\tWith Linear Regression Model Based on Card Indicators and Card Levels"),
+          )
+        ),
+        tags$hr(),
+        fluidRow(
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card1v3", label = "Select Card 1", choices = cards, selected = "Baby Dragon"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card1LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card1LvlUv3", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card5v3", label = "Select Card 5", choices = cards, selected = "The Log"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card5LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card5LvlUv3", label = "Upgraded", min = 1, max = 13, value = 11))
+                 )
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card2v3", label = "Select Card 2", choices = cards, selected = "Goblin Hut"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card2LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card2LvlUv3", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card6v3", label = "Select Card 6", choices = cards, selected = "Musketeer"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card6LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 13)),
+                   column(6, numericInput(inputId = "card6LvlUv3", label = "Upgraded", min = 1, max = 13, value = 13))
+                 )
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card3v3", label = "Select Card 3", choices = cards, selected = "Graveyard"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card3LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 10)),
+                   column(6, numericInput(inputId = "card3LvlUv3", label = "Upgraded", min = 1, max = 13, value = 10))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card7v3", label = "Select Card 7", choices = cards, selected = "Poison"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card7LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card7LvlUv3", label = "Upgraded", min = 1, max = 13, value = 11))
+                 )
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card4v3", label = "Select Card 4", choices = cards, selected = "Knight"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card4LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card4LvlUv3", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card8v3", label = "Select Card 8", choices = cards, selected = "Skeletons"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card8LvlCv3", label = "Current Lvl", min = 1, max = 13, value = 10)),
+                   column(6, numericInput(inputId = "card8LvlUv3", label = "Upgraded", min = 1, max = 13, value = 10))
+                 )
+          ),
+          column(4, 
+            fluidRow(column(12, plotOutput(outputId = "barv3"))),
+            tags$hr(),
+            fluidRow(column(12, tags$h4(textOutput(outputId = "upgradeCostv3"))))
+            )
+        )
       )
       
       
       
-      # v3 tab content (potentially)
+      # v4 tab content (potentially)
+      
+      
+      
+      
+      
       
     )
   )
@@ -307,6 +391,161 @@ server <- function(input, output, session) {
       )
     
   })
+  
+  
+  
+  # for version 3 tab
+  output$barv3 <- renderPlot({
+    # get predictions
+    
+    # for before upgrade
+    
+    # fill out newx (prediction data frame) based on input
+    newxBeforev3 <- newxEmpty
+    
+    # process selected cards
+    cardsInputv3 <- c(input$card1v3, input$card2v3, input$card3v3, input$card4v3, input$card5v3, input$card6v3, input$card7v3, input$card8v3)
+    
+    for (iv3 in 1:length(cardsInputv3)) {
+      for (jv3 in 1:length(names(newxBeforev3))) {
+        if (cardsInputv3[iv3] == names(newxBeforev3)[jv3]) {
+          newxBeforev3[1,jv3] <- 1
+        }
+      }
+    }
+    
+    # process selected levels
+    lvlInputBeforev3 <- c(input$card1LvlCv3, input$card2LvlCv3, input$card3LvlCv3, input$card4LvlCv3, input$card5LvlCv3, input$card6LvlCv3, input$card7LvlCv3, input$card8LvlCv3)
+    
+    cardsInputCleanv3 <- str_remove_all(cardsInputv3, "\\.|-")
+    cardsInputCleanv3 <- paste(cardsInputCleanv3, "Lvl")
+    
+    for (kCv3 in 1:length(cardsInputCleanv3)) {
+      for (lCv3 in 1:length(names(newxBeforev3))) {
+        if (cardsInputCleanv3[kCv3] == names(newxBeforev3)[lCv3]) {
+          newxBeforev3[1,lCv3] <- lvlInputBeforev3[kCv3]
+        }
+      }
+    }
+    
+    # now use newx for prediction
+    predictedTrophiesBeforev3 <- as.integer(predict.lm(mod1, newxBeforev3))
+    
+    
+    
+    # for after upgrade
+    
+    # fill out newx (prediction data frame) based on input
+    newxAfterv3 <- newxEmpty
+    
+    # process selected cards
+    cardsInputv3 <- c(input$card1v3, input$card2v3, input$card3v3, input$card4v3, input$card5v3, input$card6v3, input$card7v3, input$card8v3)
+    
+    for (iUv3 in 1:length(cardsInputv3)) {
+      for (jUv3 in 1:length(names(newxAfterv3))) {
+        if (cardsInputv3[iUv3] == names(newxAfterv3)[jUv3]) {
+          newxAfterv3[1,jUv3] <- 1
+        }
+      }
+    }
+    
+    # process selected levels
+    lvlInputAfterv3 <- c(input$card1LvlUv3, input$card2LvlUv3, input$card3LvlUv3, input$card4LvlUv3, input$card5LvlUv3, input$card6LvlUv3, input$card7LvlUv3, input$card8LvlUv3)
+    
+    for (kUv3 in 1:length(cardsInputCleanv3)) {
+      for (lUv3 in 1:length(names(newxAfterv3))) {
+        if (cardsInputCleanv3[kUv3] == names(newxAfterv3)[lUv3]) {
+          newxAfterv3[1,lUv3] <- lvlInputAfterv3[kUv3]
+        }
+      }
+    }
+    
+    # now use newx for prediction
+    predictedTrophiesAfterv3 <- as.integer(predict.lm(mod1, newxAfterv3))
+    
+    
+    
+    # the plot
+    df_Barplotv3 <- tibble(
+      predictions = c(predictedTrophiesBeforev3, predictedTrophiesAfterv3),
+      source = factor(c("Before Upgrade", "After Upgrade"))
+    )
+    
+    df_Barplotv3$source <- fct_inorder(df_Barplotv3$source)
+    
+    df_Barplotv3 %>%
+      ggplot(., aes(x = source, y = predictions)) +
+      geom_col(width = 0.1, aes(fill = source)) +
+      geom_label(aes(label = predictions), size = 6) +
+      theme_minimal() +
+      scale_fill_brewer(palette = "Paired") +
+      theme(
+        legend.position = "none",
+        line = element_blank(),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(
+          color = "black",
+          size = rel(1.5),
+          vjust = 3
+        ),
+        plot.background = element_rect(fill = rgb(1,1,1,1))
+      )
+    
+  })
+  
+  
+  
+  output$upgradeCostv3 <- renderText({
+    # calc function
+    costCalc <- function(cardName, currentLvl, upgradeLvl) {
+      # extract rarity info
+      cardRarity <-
+        cr_cards_rarity %>%
+        filter(name == cardName)
+      cardRarity <- cardRarity$rarity
+      
+      # calculate cost
+      if (upgradeLvl > currentLvl) {
+        cost <-
+          cr_upgrade_cost %>%
+          select(contains(cardRarity)) %>%
+          slice((currentLvl + 1):(upgradeLvl)) %>%
+          sum(na.rm = T)
+        return(cost)
+      } else {
+        return(0)
+      }
+    }
+    
+    costv3 <-
+      sum(
+        costCalc(input$card1v3, input$card1LvlCv3, input$card1LvlUv3),
+        costCalc(input$card2v3, input$card2LvlCv3, input$card2LvlUv3),
+        costCalc(input$card3v3, input$card3LvlCv3, input$card3LvlUv3),
+        costCalc(input$card4v3, input$card4LvlCv3, input$card4LvlUv3),
+        costCalc(input$card5v3, input$card5LvlCv3, input$card5LvlUv3),
+        costCalc(input$card6v3, input$card6LvlCv3, input$card6LvlUv3),
+        costCalc(input$card7v3, input$card7LvlCv3, input$card7LvlUv3),
+        costCalc(input$card8v3, input$card8LvlCv3, input$card8LvlUv3)
+      )
+    
+    paste("Upgrade Cost:", costv3)
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
 }
 
