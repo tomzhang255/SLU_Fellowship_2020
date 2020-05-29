@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(shinyalert)
 
 # the model
 cr_s3_df_ind_left <- read_csv("cr_s3_df_ind_left.csv")
@@ -34,6 +35,27 @@ cards <-
 cr_cards_rarity <- read_csv("cr_cards_rarity.csv")
 cr_upgrade_cost <- read_csv("cr_upgrade_cost.csv")
 
+# calc function
+costCalc <- function(cardName, currentLvl, upgradeLvl) {
+  # extract rarity info
+  cardRarity <-
+    cr_cards_rarity %>%
+    filter(name == cardName)
+  cardRarity <- cardRarity$rarity
+  
+  # calculate cost
+  if (upgradeLvl > currentLvl) {
+    cost <-
+      cr_upgrade_cost %>%
+      select(contains(cardRarity)) %>%
+      slice((currentLvl + 1):(upgradeLvl)) %>%
+      sum(na.rm = T)
+    return(cost)
+  } else {
+    return(0)
+  }
+}
+
 
 
 # the app
@@ -42,6 +64,7 @@ ui <- dashboardPage(
   
   dashboardSidebar(
     sidebarMenu(
+      menuItem("Version 4", tabName = "v4", icon = icon("file-code")),
       menuItem("Version 3", tabName = "v3", icon = icon("file-code")),
       menuItem("Version 2", tabName = "v2", icon = icon("file-code")),
       menuItem("Version 1", tabName = "v1", icon = icon("file-code"))
@@ -235,11 +258,94 @@ ui <- dashboardPage(
             fluidRow(column(12, tags$h4(textOutput(outputId = "upgradeCostv3"))))
             )
         )
+      ),
+      
+      
+      
+      # v4 tab content
+      tabItem(
+        tabName = "v4",
+        useShinyalert(),
+        fluidRow(
+          column(
+            12,
+            tags$h2("\tPredicting Trophies (Clash Royale Season 3)"),
+            tags$h3("\tWith Linear Regression Model Based on Card Indicators and Card Levels"),
+          )
+        ),
+        #tags$hr(),
+        tags$br(),
+        fluidRow(
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card1v4", label = "Select Card 1", choices = cards, selected = "Baby Dragon"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card1LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card1LvlUv4", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card5v4", label = "Select Card 5", choices = cards, selected = "The Log"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card5LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card5LvlUv4", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, actionButton(inputId = "viewRoutev4", label = "View Optimized Upgrade Route")))
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card2v4", label = "Select Card 2", choices = cards, selected = "Goblin Hut"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card2LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card2LvlUv4", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card6v4", label = "Select Card 6", choices = cards, selected = "Musketeer"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card6LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 13)),
+                   column(6, numericInput(inputId = "card6LvlUv4", label = "Upgraded", min = 1, max = 13, value = 13))
+                 )
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card3v4", label = "Select Card 3", choices = cards, selected = "Graveyard"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card3LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 10)),
+                   column(6, numericInput(inputId = "card3LvlUv4", label = "Upgraded", min = 1, max = 13, value = 10))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card7v4", label = "Select Card 7", choices = cards, selected = "Poison"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card7LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card7LvlUv4", label = "Upgraded", min = 1, max = 13, value = 11))
+                 )
+          ),
+          column(2,
+                 fluidRow(column(12, selectInput(inputId = "card4v4", label = "Select Card 4", choices = cards, selected = "Knight"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card4LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 11)),
+                   column(6, numericInput(inputId = "card4LvlUv4", label = "Upgraded", min = 1, max = 13, value = 11))
+                 ),
+                 tags$hr(),
+                 fluidRow(column(12, selectInput(inputId = "card8v4", label = "Select Card 8", choices = cards, selected = "Skeletons"))),
+                 fluidRow(
+                   column(6, numericInput(inputId = "card8LvlCv4", label = "Current Lvl", min = 1, max = 13, value = 10)),
+                   column(6, numericInput(inputId = "card8LvlUv4", label = "Upgraded", min = 1, max = 13, value = 10))
+                 )
+          ),
+          column(4, 
+                 fluidRow(column(12, plotOutput(outputId = "barv4"))),
+                 #tags$hr(),
+                 fluidRow(column(12, tags$h4(textOutput(outputId = "upgradeCostv4"))))
+          )
+        ),
+        #tags$hr(),
+        fluidRow(
+          column(6, tableOutput(outputId = "opRoutev4"), offset = 1)
+        )
       )
       
       
       
-      # v4 tab content (potentially)
+      # v5 tab content (potentially)
+      
       
       
       
@@ -497,27 +603,6 @@ server <- function(input, output, session) {
   
   
   output$upgradeCostv3 <- renderText({
-    # calc function
-    costCalc <- function(cardName, currentLvl, upgradeLvl) {
-      # extract rarity info
-      cardRarity <-
-        cr_cards_rarity %>%
-        filter(name == cardName)
-      cardRarity <- cardRarity$rarity
-      
-      # calculate cost
-      if (upgradeLvl > currentLvl) {
-        cost <-
-          cr_upgrade_cost %>%
-          select(contains(cardRarity)) %>%
-          slice((currentLvl + 1):(upgradeLvl)) %>%
-          sum(na.rm = T)
-        return(cost)
-      } else {
-        return(0)
-      }
-    }
-    
     costv3 <-
       sum(
         costCalc(input$card1v3, input$card1LvlCv3, input$card1LvlUv3),
@@ -532,6 +617,308 @@ server <- function(input, output, session) {
     
     paste("Upgrade Cost:", costv3)
   })
+  
+  
+  
+  # for version 4 tab
+  output$barv4 <- renderPlot({
+    # get predictions
+    
+    # for before upgrade
+    
+    # fill out newx (prediction data frame) based on input
+    newxBeforev4 <- newxEmpty
+    
+    # process selected cards
+    cardsInputv4 <- c(input$card1v4, input$card2v4, input$card3v4, input$card4v4, input$card5v4, input$card6v4, input$card7v4, input$card8v4)
+    
+    for (iv4 in 1:length(cardsInputv4)) {
+      for (jv4 in 1:length(names(newxBeforev4))) {
+        if (cardsInputv4[iv4] == names(newxBeforev4)[jv4]) {
+          newxBeforev4[1,jv4] <- 1
+        }
+      }
+    }
+    
+    # process selected levels
+    lvlInputBeforev4 <- c(input$card1LvlCv4, input$card2LvlCv4, input$card3LvlCv4, input$card4LvlCv4, input$card5LvlCv4, input$card6LvlCv4, input$card7LvlCv4, input$card8LvlCv4)
+    
+    cardsInputCleanv4 <- str_remove_all(cardsInputv4, "\\.|-")
+    cardsInputCleanv4 <- paste(cardsInputCleanv4, "Lvl")
+    
+    for (kCv4 in 1:length(cardsInputCleanv4)) {
+      for (lCv4 in 1:length(names(newxBeforev4))) {
+        if (cardsInputCleanv4[kCv4] == names(newxBeforev4)[lCv4]) {
+          newxBeforev4[1,lCv4] <- lvlInputBeforev4[kCv4]
+        }
+      }
+    }
+    
+    # now use newx for prediction
+    predictedTrophiesBeforev4 <- as.integer(predict.lm(mod1, newxBeforev4))
+    
+    
+    
+    # for after upgrade
+    
+    # fill out newx (prediction data frame) based on input
+    newxAfterv4 <- newxEmpty
+    
+    # process selected cards
+    cardsInputv4 <- c(input$card1v4, input$card2v4, input$card3v4, input$card4v4, input$card5v4, input$card6v4, input$card7v4, input$card8v4)
+    
+    for (iUv4 in 1:length(cardsInputv4)) {
+      for (jUv4 in 1:length(names(newxAfterv4))) {
+        if (cardsInputv4[iUv4] == names(newxAfterv4)[jUv4]) {
+          newxAfterv4[1,jUv4] <- 1
+        }
+      }
+    }
+    
+    # process selected levels
+    lvlInputAfterv4 <- c(input$card1LvlUv4, input$card2LvlUv4, input$card3LvlUv4, input$card4LvlUv4, input$card5LvlUv4, input$card6LvlUv4, input$card7LvlUv4, input$card8LvlUv4)
+    
+    for (kUv4 in 1:length(cardsInputCleanv4)) {
+      for (lUv4 in 1:length(names(newxAfterv4))) {
+        if (cardsInputCleanv4[kUv4] == names(newxAfterv4)[lUv4]) {
+          newxAfterv4[1,lUv4] <- lvlInputAfterv4[kUv4]
+        }
+      }
+    }
+    
+    # now use newx for prediction
+    predictedTrophiesAfterv4 <- as.integer(predict.lm(mod1, newxAfterv4))
+    
+    
+    
+    # the plot
+    df_Barplotv4 <- tibble(
+      predictions = c(predictedTrophiesBeforev4, predictedTrophiesAfterv4),
+      source = factor(c("Before Upgrade", "After Upgrade"))
+    )
+    
+    df_Barplotv4$source <- fct_inorder(df_Barplotv4$source)
+    
+    df_Barplotv4 %>%
+      ggplot(., aes(x = source, y = predictions)) +
+      geom_col(width = 0.1, aes(fill = source)) +
+      geom_label(aes(label = predictions), size = 6) +
+      theme_minimal() +
+      scale_fill_brewer(palette = "Paired") +
+      theme(
+        legend.position = "none",
+        line = element_blank(),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(
+          color = "black",
+          size = rel(1.5),
+          vjust = 3
+        ),
+        plot.background = element_rect(fill = rgb(1,1,1,1))
+      )
+    
+  })
+  
+  
+  
+  output$upgradeCostv4 <- renderText({
+    costv4 <-
+      sum(
+        costCalc(input$card1v4, input$card1LvlCv4, input$card1LvlUv4),
+        costCalc(input$card2v4, input$card2LvlCv4, input$card2LvlUv4),
+        costCalc(input$card3v4, input$card3LvlCv4, input$card3LvlUv4),
+        costCalc(input$card4v4, input$card4LvlCv4, input$card4LvlUv4),
+        costCalc(input$card5v4, input$card5LvlCv4, input$card5LvlUv4),
+        costCalc(input$card6v4, input$card6LvlCv4, input$card6LvlUv4),
+        costCalc(input$card7v4, input$card7LvlCv4, input$card7LvlUv4),
+        costCalc(input$card8v4, input$card8LvlCv4, input$card8LvlUv4)
+      )
+    
+    paste("Upgrade Cost:", costv4)
+  })
+  
+  
+  
+  viewRouteTable <- eventReactive(input$viewRoutev4, {
+    # alert
+    shinyalert(
+      title = "Please Wait",
+      text = "It may take a few seconds",
+      closeOnEsc = TRUE,
+      closeOnClickOutside = TRUE,
+      html = FALSE,
+      type = "info",
+      showConfirmButton = FALSE,
+      showCancelButton = FALSE,
+      timer = 2000,
+      imageUrl = "",
+      animation = TRUE
+    )
+    
+    # the current most updated optimized deck (starting from no upgrades)
+    opDeckv4 <- tibble(
+      card = c(input$card1v4, input$card2v4, input$card3v4, input$card4v4, input$card5v4, input$card6v4, input$card7v4, input$card8v4),
+      level = c(input$card1LvlCv4, input$card2LvlCv4, input$card3LvlCv4, input$card4LvlCv4, input$card5LvlCv4, input$card6LvlCv4, input$card7LvlCv4, input$card8LvlCv4)
+    )
+    
+    # build an empty route data frame
+    opRouteDFv4 <- tibble(
+      card = "na",
+      levelPlus1 = 0,
+      goldRequired = 0,
+      trophyGain = 0,
+      trophyGainPer1000Gold = 0
+    )
+    
+    # while the updated op deck still has cards to upgrade
+    while (sum(opDeckv4$level) < 8*13) {
+      # remove any rows with card level > 13
+      opTestv4 <- opDeckv4
+      opTestv4 <-
+        opTestv4 %>%
+        mutate(levelPlus1 = level + 1) %>%
+        select(card, levelPlus1) %>%
+        filter(levelPlus1 <= 13)
+      
+      # build empty stage upgrades df
+      stageUpgradesv4 <- opTestv4
+      stageUpgradesv4 <-
+        stageUpgradesv4 %>%
+        mutate(
+          goldRequired = 0,
+          trophyGain = 0,
+          trophyGainPer1000Gold = 0
+        )
+      
+      # the deck before any upgrades
+      opDeckBeforev4 <- opDeckv4
+      
+      
+      
+      # build newx for before-upgrade deck
+      newxOpBeforev4 <- newxEmpty
+      
+      # process selected cards
+      cardsInputOpv4 <- opDeckBeforev4$card
+      
+      for (av4 in 1:length(cardsInputOpv4)) {
+        for (bv4 in 1:length(names(newxOpBeforev4))) {
+          if (cardsInputOpv4[av4] == names(newxOpBeforev4)[bv4]) {
+            newxOpBeforev4[1,bv4] <- 1
+          }
+        }
+      }
+      
+      # process selected levels
+      lvlInputOpBeforev4 <- opDeckBeforev4$level
+      
+      cardsInputOpCleanv4 <- str_remove_all(cardsInputOpv4, "\\.|-")
+      cardsInputOpCleanv4 <- paste(cardsInputOpCleanv4, "Lvl")
+      
+      for (cv4 in 1:length(cardsInputOpCleanv4)) {
+        for (dv4 in 1:length(names(newxOpBeforev4))) {
+          if (cardsInputOpCleanv4[cv4] == names(newxOpBeforev4)[dv4]) {
+            newxOpBeforev4[1,dv4] <- lvlInputOpBeforev4[cv4]
+          }
+        }
+      }
+      
+      # now use newx for prediction
+      opDeckBeforeTrophiesv4 <- as.integer(predict.lm(mod1, newxOpBeforev4))
+      
+      
+      
+      # for each card that can be upgraded at this stage
+      for (ev4 in 1:nrow(opTestv4)) {
+        # build deck representing after upgrading that single card
+        opDeckAfterv4 <- opDeckBeforev4
+        for (fv4 in 1:nrow(opDeckAfterv4)) {
+          # if the card in the deck matches the card in question
+          if (opDeckAfterv4[fv4,1] == opTestv4[ev4,1]) {
+            opDeckAfterv4[fv4, 2] <- opDeckAfterv4[fv4, 2] + 1 # increase level by 1
+          }
+        }
+        
+        # build newx for after-upgrade deck
+        newxOpAfterv4 <- newxEmpty
+        
+        # process selected cards
+        cardsInputOpv4 <- opDeckAfterv4$card
+        
+        for (gv4 in 1:length(cardsInputOpv4)) {
+          for (hv4 in 1:length(names(newxOpAfterv4))) {
+            if (cardsInputOpv4[gv4] == names(newxOpAfterv4)[hv4]) {
+              newxOpAfterv4[1,hv4] <- 1
+            }
+          }
+        }
+        
+        # process selected levels
+        lvlInputOpAfterv4 <- opDeckAfterv4$level
+        
+        for (iv4 in 1:length(cardsInputOpCleanv4)) {
+          for (jv4 in 1:length(names(newxOpAfterv4))) {
+            if (cardsInputOpCleanv4[iv4] == names(newxOpAfterv4)[jv4]) {
+              newxOpAfterv4[1,jv4] <- lvlInputOpAfterv4[iv4]
+            }
+          }
+        }
+        
+        # now use newx for prediction
+        opDeckAfterTrophiesv4 <- as.integer(predict.lm(mod1, newxOpAfterv4))
+        
+        
+        
+        # calculate gold spent for upgrading that card
+        goldSpentOpv4 <- costCalc(opTestv4$card[ev4], opTestv4$levelPlus1[ev4] - 1, opTestv4$levelPlus1[ev4])
+        
+        # fill out that row for stage upgrades df
+        stageUpgradesv4[ev4,3] <- goldSpentOpv4
+        stageUpgradesv4[ev4,4] <- opDeckAfterTrophiesv4 - opDeckBeforeTrophiesv4
+        stageUpgradesv4[ev4,5] <- stageUpgradesv4[ev4,4] / stageUpgradesv4[ev4,3] * 1000
+      }
+      
+      
+      
+      # filter the row with the largest gain/gold ratio and add that to opRouteDF
+      opUpgradev4 <-
+        stageUpgradesv4 %>%
+        filter(trophyGainPer1000Gold == max(trophyGainPer1000Gold)) %>%
+        slice(1) # make sure there's only one case
+      
+      opRouteDFv4 <- bind_rows(opRouteDFv4, opUpgradev4)
+      
+      # update opDeckv4 (fill in the card that is upgraded)
+      for (kv4 in 1:nrow(opDeckv4)) {
+        if (opDeckv4[kv4,1] == opUpgradev4[1,1]) {
+          opDeckv4[kv4,2] <- opUpgradev4[1,2]
+        }
+      }
+    }
+    
+    # print out the op route df
+    opRouteDFv4 %>%
+      slice(-1) %>%
+      mutate(
+        Step = c(1:nrow(.)),
+        Card = card,
+        `Upgrade To` = as.integer(levelPlus1),
+        `Gold Required` = as.integer(goldRequired),
+        `Trophy Gain` = as.integer(trophyGain)
+      ) %>%
+      select(Step, Card, `Upgrade To`, `Gold Required`, `Trophy Gain`)
+  })
+  
+  
+  
+  output$opRoutev4 <- renderTable({
+    viewRouteTable()
+  })
+  
+  
+  
+  # for version 5 tab (potentially)
   
   
   
