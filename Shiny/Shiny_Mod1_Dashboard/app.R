@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(tidyverse)
 library(shinyalert)
+library(rhandsontable)
 
 # the model
 cr_s3_df_ind_left <- read_csv("cr_s3_df_ind_left.csv")
@@ -434,8 +435,8 @@ ui <- dashboardPage(
           )
         ),
         fluidRow(
-          column(5, tableOutput(outputId = "opRouteLv5")),
-          column(5, tableOutput(outputId = "opRouteRv5"), offset = 2)
+          column(5, rHandsontableOutput(outputId = "opRouteLv5")),
+          column(5, rHandsontableOutput(outputId = "opRouteRv5"), offset = 2)
         )
       )
       
@@ -1365,8 +1366,8 @@ server <- function(input, output, session) {
   
   
   
-  output$opRouteLv5 <- renderTable({
-    viewRouteTableLv5()
+  output$opRouteLv5 <- renderRHandsontable({
+    rhandsontable(viewRouteTableLv5(), manualRowMove = TRUE)
   })
   
   
@@ -1529,8 +1530,8 @@ server <- function(input, output, session) {
   
   
   
-  output$opRouteRv5 <- renderTable({
-    viewRouteTableRv5()
+  output$opRouteRv5 <- renderRHandsontable({
+    rhandsontable(viewRouteTableRv5(), manualRowMove = TRUE)
   })
   
   
