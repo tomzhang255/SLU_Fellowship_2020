@@ -104,10 +104,39 @@ ui <- fluidPage(
         column(3, textOutput(outputId = "card6IconLvl"), align = "center"),
         column(3, textOutput(outputId = "card7IconLvl"), align = "center"),
         column(3, textOutput(outputId = "card8IconLvl"), align = "center")
+      ),
+      br(),
+      fluidRow(
+        column(12, tags$h4("Deck 2"), align = "center")
+      ),
+      fluidRow(
+        column(3, uiOutput(outputId = "card1IconD2")),
+        column(3, uiOutput(outputId = "card2IconD2")),
+        column(3, uiOutput(outputId = "card3IconD2")),
+        column(3, uiOutput(outputId = "card4IconD2"))
+      ),
+      fluidRow(
+        column(3, textOutput(outputId = "card1IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card2IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card3IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card4IconLvlD2"), align = "center")
+      ),
+      fluidRow(
+        column(3, uiOutput(outputId = "card5IconD2")),
+        column(3, uiOutput(outputId = "card6IconD2")),
+        column(3, uiOutput(outputId = "card7IconD2")),
+        column(3, uiOutput(outputId = "card8IconD2"))
+      ),
+      fluidRow(
+        column(3, textOutput(outputId = "card5IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card6IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card7IconLvlD2"), align = "center"),
+        column(3, textOutput(outputId = "card8IconLvlD2"), align = "center")
       )
     ),
     mainPanel(
       tabsetPanel(
+        id = "inTabset",
         tabPanel(
           title = "Deck Comparison",
           fluidRow(
@@ -204,12 +233,21 @@ ui <- fluidPage(
           ),
           tags$br(),
           fluidRow(
-            column(6, actionButton(inputId = "viewUpdate", label = "View Optimized Upgrade Route / Update Plot"))
+            column(4, actionButton(inputId = "viewUpdate", label = "View Optimized Upgrade Route / Update Plot")),
+            column(1, actionButton(inputId = "reset", label = "Reset"))
           ),
           tags$br(),
           fluidRow(
-            column(7, rHandsontableOutput(outputId = "opRouteLv5")),
+            column(7,
+                   fluidRow(
+                     column(12, rHandsontableOutput(outputId = "opRouteLv5")),
+                     column(12, tags$h5(textOutput(outputId = "noteRoute")))
+                   )
+            ),
             column(5, plotOutput(outputId = "geomLine"))
+          ),
+          fluidRow(# experimental
+            column(12, rHandsontableOutput(outputId = "tableOut"))
           )
         )
       )
@@ -370,6 +408,89 @@ server <- function(input, output, session) {
   
   
   
+  # for card icons of right deck
+  output$card1IconD2 <- renderUI({
+    for (icon1D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon1D2] == input$card1Rv5) {
+        icon1URLD2 <-  cr_cards_s12$iconUrl[icon1D2]
+      }
+    }
+    
+    tags$img(src = icon1URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card2IconD2 <- renderUI({
+    for (icon2D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon2D2] == input$card2Rv5) {
+        icon2URLD2 <-  cr_cards_s12$iconUrl[icon2D2]
+      }
+    }
+    
+    tags$img(src = icon2URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card3IconD2 <- renderUI({
+    for (icon3D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon3D2] == input$card3Rv5) {
+        icon3URLD2 <-  cr_cards_s12$iconUrl[icon3D2]
+      }
+    }
+    
+    tags$img(src = icon3URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card4IconD2 <- renderUI({
+    for (icon4D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon4D2] == input$card4Rv5) {
+        icon4URLD2 <-  cr_cards_s12$iconUrl[icon4D2]
+      }
+    }
+    
+    tags$img(src = icon4URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card5IconD2 <- renderUI({
+    for (icon5D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon5D2] == input$card5Rv5) {
+        icon5URLD2 <-  cr_cards_s12$iconUrl[icon5D2]
+      }
+    }
+    
+    tags$img(src = icon5URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card6IconD2 <- renderUI({
+    for (icon6D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon6D2] == input$card6Rv5) {
+        icon6URLD2 <-  cr_cards_s12$iconUrl[icon6D2]
+      }
+    }
+    
+    tags$img(src = icon6URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card7IconD2 <- renderUI({
+    for (icon7D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon7D2] == input$card7Rv5) {
+        icon7URLD2 <-  cr_cards_s12$iconUrl[icon7D2]
+      }
+    }
+    
+    tags$img(src = icon7URLD2, width = "100%", height = "auto")
+  })
+  
+  output$card8IconD2 <- renderUI({
+    for (icon8D2 in 1:length(cards_s12)) {
+      if (cards_s12[icon8D2] == input$card8Rv5) {
+        icon8URLD2 <-  cr_cards_s12$iconUrl[icon8D2]
+      }
+    }
+    
+    tags$img(src = icon8URLD2, width = "100%", height = "auto")
+  })
+  
+  
+  
   # for card icon levels of left deck
   output$card1IconLvl <- renderText({
     paste("Level", input$card1LvlLv5)
@@ -405,13 +526,53 @@ server <- function(input, output, session) {
   
   
   
+  # for card icon levels of right deck
+  output$card1IconLvlD2 <- renderText({
+    paste("Level", input$card1LvlRv5)
+  })
+  
+  output$card2IconLvlD2 <- renderText({
+    paste("Level", input$card2LvlRv5)
+  })
+  
+  output$card3IconLvlD2 <- renderText({
+    paste("Level", input$card3LvlRv5)
+  })
+  
+  output$card4IconLvlD2 <- renderText({
+    paste("Level", input$card4LvlRv5)
+  })
+  
+  output$card5IconLvlD2 <- renderText({
+    paste("Level", input$card5LvlRv5)
+  })
+  
+  output$card6IconLvlD2 <- renderText({
+    paste("Level", input$card6LvlRv5)
+  })
+  
+  output$card7IconLvlD2 <- renderText({
+    paste("Level", input$card7LvlRv5)
+  })
+  
+  output$card8IconLvlD2 <- renderText({
+    paste("Level", input$card8LvlRv5)
+  })
+  
+  
+  
   # reactive values
   values <- reactiveValues()
   
   
   
+  viewCounter <- 0
+  
+  
+  
   # for bar plot
   output$barv5 <- renderPlot({
+    viewCounter <<- 0
     # get predictions
     
     # for left deck
@@ -517,187 +678,214 @@ server <- function(input, output, session) {
   
   
   
+  
+  
+  
+  
   # View Route Table Left
-  viewRoute <- eventReactive(input$viewUpdate, {
-    # alert
-    shinyalert(
-      title = "Please Wait",
-      text = "It may take a few seconds",
-      closeOnEsc = TRUE,
-      closeOnClickOutside = TRUE,
-      html = FALSE,
-      type = "info",
-      showConfirmButton = FALSE,
-      showCancelButton = FALSE,
-      timer = 2000,
-      imageUrl = "",
-      animation = TRUE
-    )
-    
-    # the current most updated optimized deck (starting from no upgrades)
-    opDeckLv5 <- tibble(
-      card = c(input$card1Lv5, input$card2Lv5, input$card3Lv5, input$card4Lv5, input$card5Lv5, input$card6Lv5, input$card7Lv5, input$card8Lv5),
-      level = c(input$card1LvlLv5, input$card2LvlLv5, input$card3LvlLv5, input$card4LvlLv5, input$card5LvlLv5, input$card6LvlLv5, input$card7LvlLv5, input$card8LvlLv5)
-    )
-    
-    # build an empty route data frame
-    opRouteDFLv5 <- tibble(
-      card = "na",
-      levelPlus1 = 0,
-      goldRequired = 0,
-      trophyGain = 0,
-      trophyGainPer1000Gold = 0
-    )
-    
-    # while the updated op deck still has cards to upgrade
-    while (sum(opDeckLv5$level) < 8*13) {
-      # remove any rows with card level > 13
-      opTestLv5 <- opDeckLv5
-      opTestLv5 <-
-        opTestLv5 %>%
-        mutate(levelPlus1 = level + 1) %>%
-        select(card, levelPlus1) %>%
-        filter(levelPlus1 <= 13)
+  observeEvent(input$viewUpdate, {
+    viewCounter <<- viewCounter + 1
+    output$opRouteLv5 <- renderRHandsontable({
+      # alert
+      shinyalert(
+        title = "Please Wait",
+        text = "It may take a few seconds",
+        closeOnEsc = TRUE,
+        closeOnClickOutside = TRUE,
+        html = FALSE,
+        type = "info",
+        showConfirmButton = FALSE,
+        showCancelButton = FALSE,
+        timer = 2000,
+        imageUrl = "",
+        animation = TRUE
+      )
       
-      # build empty stage upgrades df
-      stageUpgradesLv5 <- opTestLv5
-      stageUpgradesLv5 <-
-        stageUpgradesLv5 %>%
-        mutate(
-          goldRequired = 0,
-          trophyGain = 0,
-          trophyGainPer1000Gold = 0
-        )
+      # the current most updated optimized deck (starting from no upgrades)
+      opDeckLv5 <- tibble(
+        card = c(input$card1Lv5, input$card2Lv5, input$card3Lv5, input$card4Lv5, input$card5Lv5, input$card6Lv5, input$card7Lv5, input$card8Lv5),
+        level = c(input$card1LvlLv5, input$card2LvlLv5, input$card3LvlLv5, input$card4LvlLv5, input$card5LvlLv5, input$card6LvlLv5, input$card7LvlLv5, input$card8LvlLv5)
+      )
       
-      # the deck before any upgrades
-      opDeckBeforeLv5 <- opDeckLv5
+      # build an empty route data frame
+      opRouteDFLv5 <- tibble(
+        card = "na",
+        levelPlus1 = 0,
+        goldRequired = 0,
+        trophyGain = 0,
+        trophyGainPer1000Gold = 0
+      )
       
-      
-      
-      # build newx for before-upgrade deck
-      newxOpBeforeLv5 <- newxEmpty
-      
-      # process selected cards
-      cardsInputOpLv5 <- opDeckBeforeLv5$card
-      
-      for (iv5 in 1:length(cardsInputOpLv5)) {
-        for (jv5 in 1:length(names(newxOpBeforeLv5))) {
-          if (cardsInputOpLv5[iv5] == names(newxOpBeforeLv5)[jv5]) {
-            newxOpBeforeLv5[1,jv5] <- 1
-          }
-        }
-      }
-      
-      # process selected levels
-      lvlInputOpBeforeLv5 <- opDeckBeforeLv5$level
-      
-      cardsInputOpCleanLv5 <- str_remove_all(cardsInputOpLv5, "\\.|-")
-      cardsInputOpCleanLv5 <- paste(cardsInputOpCleanLv5, "Lvl")
-      
-      for (kv5 in 1:length(cardsInputOpCleanLv5)) {
-        for (lv5 in 1:length(names(newxOpBeforeLv5))) {
-          if (cardsInputOpCleanLv5[kv5] == names(newxOpBeforeLv5)[lv5]) {
-            newxOpBeforeLv5[1,lv5] <- lvlInputOpBeforeLv5[kv5]
-          }
-        }
-      }
-      
-      # now use newx for prediction
-      opDeckBeforeTrophiesLv5 <- as.integer(predict.lm(mod1, newxOpBeforeLv5))
-      
-      
-      
-      # for each card that can be upgraded at this stage
-      for (mv5 in 1:nrow(opTestLv5)) {
-        # build deck representing after upgrading that single card
-        opDeckAfterLv5 <- opDeckBeforeLv5
-        for (nv5 in 1:nrow(opDeckAfterLv5)) {
-          # if the card in the deck matches the card in question
-          if (opDeckAfterLv5[nv5,1] == opTestLv5[mv5,1]) {
-            opDeckAfterLv5[nv5, 2] <- opDeckAfterLv5[nv5, 2] + 1 # increase level by 1
-          }
-        }
+      # while the updated op deck still has cards to upgrade
+      while (sum(opDeckLv5$level) < 8*13) {
+        # remove any rows with card level > 13
+        opTestLv5 <- opDeckLv5
+        opTestLv5 <-
+          opTestLv5 %>%
+          mutate(levelPlus1 = level + 1) %>%
+          select(card, levelPlus1) %>%
+          filter(levelPlus1 <= 13)
         
-        # build newx for after-upgrade deck
-        newxOpAfterLv5 <- newxEmpty
+        # build empty stage upgrades df
+        stageUpgradesLv5 <- opTestLv5
+        stageUpgradesLv5 <-
+          stageUpgradesLv5 %>%
+          mutate(
+            goldRequired = 0,
+            trophyGain = 0,
+            trophyGainPer1000Gold = 0
+          )
+        
+        # the deck before any upgrades
+        opDeckBeforeLv5 <- opDeckLv5
+        
+        
+        
+        # build newx for before-upgrade deck
+        newxOpBeforeLv5 <- newxEmpty
         
         # process selected cards
-        cardsInputOpLv5 <- opDeckAfterLv5$card
+        cardsInputOpLv5 <- opDeckBeforeLv5$card
         
-        for (ov5 in 1:length(cardsInputOpLv5)) {
-          for (pv5 in 1:length(names(newxOpAfterLv5))) {
-            if (cardsInputOpLv5[ov5] == names(newxOpAfterLv5)[pv5]) {
-              newxOpAfterLv5[1,pv5] <- 1
+        for (iv5 in 1:length(cardsInputOpLv5)) {
+          for (jv5 in 1:length(names(newxOpBeforeLv5))) {
+            if (cardsInputOpLv5[iv5] == names(newxOpBeforeLv5)[jv5]) {
+              newxOpBeforeLv5[1,jv5] <- 1
             }
           }
         }
         
         # process selected levels
-        lvlInputOpAfterLv5 <- opDeckAfterLv5$level
+        lvlInputOpBeforeLv5 <- opDeckBeforeLv5$level
         
-        for (qv5 in 1:length(cardsInputOpCleanLv5)) {
-          for (rv5 in 1:length(names(newxOpAfterLv5))) {
-            if (cardsInputOpCleanLv5[qv5] == names(newxOpAfterLv5)[rv5]) {
-              newxOpAfterLv5[1,rv5] <- lvlInputOpAfterLv5[qv5]
+        cardsInputOpCleanLv5 <- str_remove_all(cardsInputOpLv5, "\\.|-")
+        cardsInputOpCleanLv5 <- paste(cardsInputOpCleanLv5, "Lvl")
+        
+        for (kv5 in 1:length(cardsInputOpCleanLv5)) {
+          for (lv5 in 1:length(names(newxOpBeforeLv5))) {
+            if (cardsInputOpCleanLv5[kv5] == names(newxOpBeforeLv5)[lv5]) {
+              newxOpBeforeLv5[1,lv5] <- lvlInputOpBeforeLv5[kv5]
             }
           }
         }
         
         # now use newx for prediction
-        opDeckAfterTrophiesLv5 <- as.integer(predict.lm(mod1, newxOpAfterLv5))
+        opDeckBeforeTrophiesLv5 <- as.integer(predict.lm(mod1, newxOpBeforeLv5))
         
         
         
-        # calculate gold spent for upgrading that card
-        goldSpentOpLv5 <- costCalc(opTestLv5$card[mv5], opTestLv5$levelPlus1[mv5] - 1, opTestLv5$levelPlus1[mv5])
+        # for each card that can be upgraded at this stage
+        for (mv5 in 1:nrow(opTestLv5)) {
+          # build deck representing after upgrading that single card
+          opDeckAfterLv5 <- opDeckBeforeLv5
+          for (nv5 in 1:nrow(opDeckAfterLv5)) {
+            # if the card in the deck matches the card in question
+            if (opDeckAfterLv5[nv5,1] == opTestLv5[mv5,1]) {
+              opDeckAfterLv5[nv5, 2] <- opDeckAfterLv5[nv5, 2] + 1 # increase level by 1
+            }
+          }
+          
+          # build newx for after-upgrade deck
+          newxOpAfterLv5 <- newxEmpty
+          
+          # process selected cards
+          cardsInputOpLv5 <- opDeckAfterLv5$card
+          
+          for (ov5 in 1:length(cardsInputOpLv5)) {
+            for (pv5 in 1:length(names(newxOpAfterLv5))) {
+              if (cardsInputOpLv5[ov5] == names(newxOpAfterLv5)[pv5]) {
+                newxOpAfterLv5[1,pv5] <- 1
+              }
+            }
+          }
+          
+          # process selected levels
+          lvlInputOpAfterLv5 <- opDeckAfterLv5$level
+          
+          for (qv5 in 1:length(cardsInputOpCleanLv5)) {
+            for (rv5 in 1:length(names(newxOpAfterLv5))) {
+              if (cardsInputOpCleanLv5[qv5] == names(newxOpAfterLv5)[rv5]) {
+                newxOpAfterLv5[1,rv5] <- lvlInputOpAfterLv5[qv5]
+              }
+            }
+          }
+          
+          # now use newx for prediction
+          opDeckAfterTrophiesLv5 <- as.integer(predict.lm(mod1, newxOpAfterLv5))
+          
+          
+          
+          # calculate gold spent for upgrading that card
+          goldSpentOpLv5 <- costCalc(opTestLv5$card[mv5], opTestLv5$levelPlus1[mv5] - 1, opTestLv5$levelPlus1[mv5])
+          
+          # fill out that row for stage upgrades df
+          stageUpgradesLv5[mv5,3] <- goldSpentOpLv5
+          stageUpgradesLv5[mv5,4] <- opDeckAfterTrophiesLv5 - opDeckBeforeTrophiesLv5
+          stageUpgradesLv5[mv5,5] <- stageUpgradesLv5[mv5,4] / stageUpgradesLv5[mv5,3] * 1000
+        }
         
-        # fill out that row for stage upgrades df
-        stageUpgradesLv5[mv5,3] <- goldSpentOpLv5
-        stageUpgradesLv5[mv5,4] <- opDeckAfterTrophiesLv5 - opDeckBeforeTrophiesLv5
-        stageUpgradesLv5[mv5,5] <- stageUpgradesLv5[mv5,4] / stageUpgradesLv5[mv5,3] * 1000
-      }
-      
-      
-      
-      # filter the row with the largest gain/gold ratio and add that to opRouteDF
-      opUpgradeLv5 <-
-        stageUpgradesLv5 %>%
-        filter(trophyGainPer1000Gold == max(trophyGainPer1000Gold)) %>%
-        slice(1) # make sure there's only one case
-      
-      opRouteDFLv5 <- bind_rows(opRouteDFLv5, opUpgradeLv5)
-      
-      # update opDeckv4 (fill in the card that is upgraded)
-      for (sv5 in 1:nrow(opDeckLv5)) {
-        if (opDeckLv5[sv5,1] == opUpgradeLv5[1,1]) {
-          opDeckLv5[sv5,2] <- opUpgradeLv5[1,2]
+        
+        
+        # filter the row with the largest gain/gold ratio and add that to opRouteDF
+        opUpgradeLv5 <-
+          stageUpgradesLv5 %>%
+          filter(trophyGainPer1000Gold == max(trophyGainPer1000Gold)) %>%
+          slice(1) # make sure there's only one case
+        
+        opRouteDFLv5 <- bind_rows(opRouteDFLv5, opUpgradeLv5)
+        
+        # update opDeckv4 (fill in the card that is upgraded)
+        for (sv5 in 1:nrow(opDeckLv5)) {
+          if (opDeckLv5[sv5,1] == opUpgradeLv5[1,1]) {
+            opDeckLv5[sv5,2] <- opUpgradeLv5[1,2]
+          }
         }
       }
+      
+      # print out the op route df
+      opRouteDFLv5 <-
+        opRouteDFLv5 %>%
+        slice(-1) %>%
+        mutate(
+          Step = c(1:nrow(.)),
+          Card = card,
+          `Upgrade To` = as.integer(levelPlus1),
+          `Gold Required` = as.integer(goldRequired),
+          `Trophy\nGain` = as.integer(trophyGain),
+          `Trophy Gain\n/ 1000 Gold` = trophyGainPer1000Gold
+        ) %>%
+        select(Step, Card, `Upgrade To`, `Gold Required`, `Trophy\nGain`, `Trophy Gain\n/ 1000 Gold`)
+      
+      values$hot <<- NULL
+      values$hot <<- rhandsontable(opRouteDFLv5, manualRowMove = TRUE)
+    })
+    
+  })
+  
+  
+  
+  # route note
+  output$noteRoute <- renderText({
+    if (is.null(input$opRouteLv5)) {
+      return (NULL)
+    } else {
+      "Note: The rows in the table are adjustable and can be used to change the order if some upgrades are feasible."
     }
-    
-    # print out the op route df
-    opRouteDFLv5 <-
-    opRouteDFLv5 %>%
-      slice(-1) %>%
-      mutate(
-        Step = c(1:nrow(.)),
-        Card = card,
-        `Upgrade To` = as.integer(levelPlus1),
-        `Gold Required` = as.integer(goldRequired),
-        `Trophy\nGain` = as.integer(trophyGain),
-        `Trophy Gain\n/ 1000 Gold` = trophyGainPer1000Gold
-      ) %>%
-      select(Step, Card, `Upgrade To`, `Gold Required`, `Trophy\nGain`, `Trophy Gain\n/ 1000 Gold`)
-    
-    rhandsontable(opRouteDFLv5, manualRowMove = TRUE)
   })
   
   
   
-  output$opRouteLv5 <- renderRHandsontable({
-    viewRoute()
+  # save route as sorted df
+  observe({
+    if(!is.null(input$opRouteLv5)) {
+      values$DF <- hot_to_r(input$opRouteLv5)
+      isolate(values$DF <-
+        values$DF %>%
+          arrange(desc(`Trophy Gain\n/ 1000 Gold`))
+      )
+    }
   })
-
+  
   
   
   # for line plot
@@ -705,20 +893,93 @@ server <- function(input, output, session) {
     if (is.null(input$opRouteLv5)) {
       return(NULL)
     } else {
-      data <- hot_to_r(input$opRouteLv5)
-      data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
-      data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + values$leftTrophies
-      options(scipen=10000)
-      data %>%
-        ggplot(., aes(x = Cumulative_Gold, y = Trophies)) +
-        geom_line() +
-        theme_bw() +
-        labs(
-          x = "Cumulative Gold Spent",
-          y = "Trophies",
-          title = "Line Plot of Trophies vs Cumulative Gold Spent"
-        )
+      if (viewCounter == 1 | viewCounter == 0) {
+        data <- values$DF
+        data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
+        data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + values$leftTrophies
+        options(scipen=10000)
+        data %>%
+          ggplot(., aes(x = Cumulative_Gold, y = Trophies)) +
+          geom_line() +
+          theme_bw() +
+          labs(
+            x = "Cumulative Gold Spent",
+            y = "Trophies",
+            title = "Line Plot of Trophies vs Cumulative Gold Spent"
+          ) +
+          theme(
+            axis.title = element_text(size = rel(1.3)),
+            axis.text = element_text(size = rel(1.3)),
+            plot.title = element_text(size = rel(1.3))
+          )
+      } else {
+        if (!is.null(values$DF)) {
+          data1 <- values$DF
+          data1[, "Cumulative_Gold"] <- cumsum(data1$`Gold Required`)
+          data1[, "Trophies"] <- cumsum(data1$`Trophy\nGain`) + values$leftTrophies
+          data1[, "Route"] <- "Optimized Route"
+          
+          data2 <- hot_to_r(input$opRouteLv5)
+          data2[, "Cumulative_Gold"] <- cumsum(data2$`Gold Required`)
+          data2[, "Trophies"] <- cumsum(data2$`Trophy\nGain`) + values$leftTrophies
+          data2[, "Route"] <- "Adjusted Route"
+          
+          newData <- bind_rows(data1, data2)
+          newData$Route <- fct_inorder(newData$Route)
+          
+          options(scipen=10000)
+          ggplot(newData, aes(x = Cumulative_Gold, y = Trophies, color = Route)) +
+            geom_line() +
+            theme_bw() +
+            labs(
+              x = "Cumulative Gold Spent",
+              y = "Trophies",
+              title = "Line Plot of Trophies vs Cumulative Gold Spent"
+            ) +
+            scale_color_manual(values = c("black", "red")) +
+            theme(
+              legend.position = "bottom",
+              axis.title = element_text(size = rel(1.3)),
+              axis.text = element_text(size = rel(1.3)),
+              plot.title = element_text(size = rel(1.3)),
+              legend.title = element_blank(),
+              legend.text = element_text(size = rel(1.15))
+            )
+        } else {
+          data <- hot_to_r(input$opRouteLv5)
+          data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
+          data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + values$leftTrophies
+          options(scipen=10000)
+          data %>%
+            ggplot(., aes(x = Cumulative_Gold, y = Trophies)) +
+            geom_line() +
+            theme_bw() +
+            labs(
+              x = "Cumulative Gold Spent",
+              y = "Trophies",
+              title = "Line Plot of Trophies vs Cumulative Gold Spent"
+            ) +
+            theme(
+              axis.title = element_text(size = rel(1.3)),
+              axis.text = element_text(size = rel(1.3)),
+              plot.title = element_text(size = rel(1.3))
+            )
+        }
+      }
     }
+  })
+  
+  
+  
+  # reset button
+  observeEvent(input$reset, {
+    viewCounter <<- 0
+    output$opRouteLv5 <- NULL
+    output$opRouteLv5 <- renderRHandsontable({
+      values$hot <- NULL
+      values$hot <- rhandsontable(values$DF, manualRowMove = F)
+      values$hot
+    })
   })
   
 }
