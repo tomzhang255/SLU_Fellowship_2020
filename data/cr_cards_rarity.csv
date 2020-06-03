@@ -1,95 +1,95 @@
-name,rarity,Name
-Knight,Common,NA
-Archers,Common,NA
-Goblins,Common,NA
-Giant,Rare,NA
-P.E.K.K.A,Epic,NA
-Minions,Common,NA
-Balloon,Epic,NA
-Witch,Epic,NA
-Barbarians,Common,NA
-Golem,Epic,NA
-Skeletons,Common,NA
-Valkyrie,Rare,NA
-Skeleton Army,Epic,NA
-Bomber,Common,NA
-Musketeer,Rare,NA
-Baby Dragon,Epic,NA
-Prince,Epic,NA
-Wizard,Rare,NA
-Mini P.E.K.K.A,Rare,NA
-Spear Goblins,Common,NA
-Giant Skeleton,Epic,NA
-Hog Rider,Rare,NA
-Minion Horde,Common,NA
-Ice Wizard,Legendary,NA
-Royal Giant,Common,NA
-Guards,Epic,NA
-Princess,Legendary,NA
-Dark Prince,Epic,NA
-Three Musketeers,Rare,NA
-Lava Hound,Legendary,NA
-Ice Spirit,Common,NA
-Fire Spirits,Common,NA
-Miner,Legendary,NA
-Sparky,Legendary,NA
-Bowler,Epic,NA
-Lumberjack,Legendary,NA
-Battle Ram,Rare,NA
-Inferno Dragon,Legendary,NA
-Ice Golem,Rare,NA
-Mega Minion,Rare,NA
-Dart Goblin,Rare,NA
-Goblin Gang,Common,NA
-Electro Wizard,Legendary,NA
-Elite Barbarians,Common,NA
-Hunter,Epic,NA
-Executioner,Epic,NA
-Bandit,Legendary,NA
-Royal Recruits,Common,NA
-Night Witch,Legendary,NA
-Bats,Common,NA
-Royal Ghost,Legendary,NA
-Ram Rider,Legendary,NA
-Zappies,Rare,NA
-Rascals,Common,NA
-Cannon Cart,Epic,NA
-Mega Knight,Legendary,NA
-Skeleton Barrel,Common,NA
-Flying Machine,Rare,NA
-Wall Breakers,Epic,NA
-Royal Hogs,Rare,NA
-Goblin Giant,Epic,NA
-Magic Archer,Legendary,NA
-Electro Dragon,Epic,NA
-Cannon,Common,NA
-Goblin Hut,Rare,NA
-Mortar,Common,NA
-Inferno Tower,Rare,NA
-Bomb Tower,Rare,NA
-Barbarian Hut,Rare,NA
-Tesla,Common,NA
-Elixir Collector,Rare,NA
-X-Bow,Epic,NA
-Tombstone,Rare,NA
-Furnace,Rare,NA
-Goblin Cage,Rare,NA
-Fireball,Rare,NA
-Arrows,Common,NA
-Rage,Epic,NA
-Rocket,Rare,NA
-Goblin Barrel,Epic,NA
-Freeze,Epic,NA
-Mirror,Epic,NA
-Lightning,Epic,NA
-Zap,Common,NA
-Poison,Epic,NA
-Graveyard,Legendary,NA
-The Log,Legendary,NA
-Tornado,Epic,NA
-Clone,Epic,NA
-Earthquake,Rare,NA
-Barbarian Barrel,Epic,NA
-Heal,Rare,NA
-Giant Snowball,Common,NA
-NA,Legendary,Fisherman
+name,rarity
+Knight,Common
+Archers,Common
+Goblins,Common
+Giant,Rare
+P.E.K.K.A,Epic
+Minions,Common
+Balloon,Epic
+Witch,Epic
+Barbarians,Common
+Golem,Epic
+Skeletons,Common
+Valkyrie,Rare
+Skeleton Army,Epic
+Bomber,Common
+Musketeer,Rare
+Baby Dragon,Epic
+Prince,Epic
+Wizard,Rare
+Mini P.E.K.K.A,Rare
+Spear Goblins,Common
+Giant Skeleton,Epic
+Hog Rider,Rare
+Minion Horde,Common
+Ice Wizard,Legendary
+Royal Giant,Common
+Guards,Epic
+Princess,Legendary
+Dark Prince,Epic
+Three Musketeers,Rare
+Lava Hound,Legendary
+Ice Spirit,Common
+Fire Spirits,Common
+Miner,Legendary
+Sparky,Legendary
+Bowler,Epic
+Lumberjack,Legendary
+Battle Ram,Rare
+Inferno Dragon,Legendary
+Ice Golem,Rare
+Mega Minion,Rare
+Dart Goblin,Rare
+Goblin Gang,Common
+Electro Wizard,Legendary
+Elite Barbarians,Common
+Hunter,Epic
+Executioner,Epic
+Bandit,Legendary
+Royal Recruits,Common
+Night Witch,Legendary
+Bats,Common
+Royal Ghost,Legendary
+Ram Rider,Legendary
+Zappies,Rare
+Rascals,Common
+Cannon Cart,Epic
+Mega Knight,Legendary
+Skeleton Barrel,Common
+Flying Machine,Rare
+Wall Breakers,Epic
+Royal Hogs,Rare
+Goblin Giant,Epic
+Magic Archer,Legendary
+Electro Dragon,Epic
+Cannon,Common
+Goblin Hut,Rare
+Mortar,Common
+Inferno Tower,Rare
+Bomb Tower,Rare
+Barbarian Hut,Rare
+Tesla,Common
+Elixir Collector,Rare
+X-Bow,Epic
+Tombstone,Rare
+Furnace,Rare
+Goblin Cage,Rare
+Fireball,Rare
+Arrows,Common
+Rage,Epic
+Rocket,Rare
+Goblin Barrel,Epic
+Freeze,Epic
+Mirror,Epic
+Lightning,Epic
+Zap,Common
+Poison,Epic
+Graveyard,Legendary
+The Log,Legendary
+Tornado,Epic
+Clone,Epic
+Earthquake,Rare
+Barbarian Barrel,Epic
+Heal,Rare
+Giant Snowball,Common
+Fisherman,Legendary

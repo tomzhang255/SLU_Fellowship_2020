@@ -20,7 +20,7 @@ cr_cards_rarity <-
   cr_cards_df %>%
     select(name, rarity)
 
-cr_cards_rarity <- bind_rows(cr_cards_rarity, tibble(Name = "Fisherman", rarity = "Legendary"))
+cr_cards_rarity <- bind_rows(cr_cards_rarity, tibble(name = "Fisherman", rarity = "Legendary"))
 
 # save df
 write_csv(cr_cards_rarity, "data/cr_cards_rarity.csv")
@@ -65,7 +65,7 @@ costCalc <- function(cardName, currentLvl, upgradeLvl) {
 
 ## testing
 ```{r}
-costCalc("Wizard", 9, 12)
+costCalc("Fisherman", 9, 12)
 ```
 
 
