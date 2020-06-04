@@ -70,10 +70,10 @@ cards_s12 <- cr_cards_s12$name
 # the app
 ui <- fluidPage(
   # suppress error messages
-  # tags$style(type="text/css",
-  #            ".shiny-output-error { visibility: hidden; }",
-  #            ".shiny-output-error:before { visibility: hidden; }"
-  # ),
+  tags$style(type="text/css",
+             ".shiny-output-error { visibility: hidden; }",
+             ".shiny-output-error:before { visibility: hidden; }"
+  ),
   fluidRow(column(12, tags$h3("Predicting Trophies for Clash Royale Season 3"))),
   sidebarLayout(
     sidebarPanel(
@@ -173,8 +173,8 @@ ui <- fluidPage(
                      column(4, numericInput(inputId = "card7LvlLv5", label = "Level", min = 1, max = 13, value = 11))
                    ),
                    fluidRow(
-                     column(8, selectInput(inputId = "card8Lv5", label = "Card 8", choices = cards, selected = "Skeletons")),
-                     column(4, numericInput(inputId = "card8LvlLv5", label = "Level", min = 1, max = 13, value = 10))
+                     column(8, selectInput(inputId = "card8Lv5", label = "Card 8", choices = cards, selected = "Guards")),
+                     column(4, numericInput(inputId = "card8LvlLv5", label = "Level", min = 1, max = 13, value = 13))
                    )
             ),
             column(4,
@@ -869,7 +869,7 @@ server <- function(input, output, session) {
     if (is.null(input$opRouteLv5)) {
       return (NULL)
     } else {
-      "Note: The rows in the table are adjustable and can be used to change the order if some upgrades are feasible."
+      'Note: The rows in the table are adjustable; simply drag them around to change the order. Then, click on "Update Plot" button to see how the path changes.'
     }
   })
   
@@ -900,7 +900,7 @@ server <- function(input, output, session) {
         options(scipen=10000)
         data %>%
           ggplot(., aes(x = Cumulative_Gold, y = Trophies)) +
-          geom_line() +
+          geom_line(size = 2) +
           theme_bw() +
           labs(
             x = "Cumulative Gold Spent",
@@ -910,7 +910,7 @@ server <- function(input, output, session) {
           theme(
             axis.title = element_text(size = rel(1.3)),
             axis.text = element_text(size = rel(1.3)),
-            plot.title = element_text(size = rel(1.3))
+            plot.title = element_text(size = rel(1.5), hjust = 1.2)
           )
       } else {
         if (!is.null(values$DF)) {
@@ -929,7 +929,7 @@ server <- function(input, output, session) {
           
           options(scipen=10000)
           ggplot(newData, aes(x = Cumulative_Gold, y = Trophies, color = Route)) +
-            geom_line() +
+            geom_line(size = 2) +
             theme_bw() +
             labs(
               x = "Cumulative Gold Spent",
@@ -941,9 +941,9 @@ server <- function(input, output, session) {
               legend.position = "bottom",
               axis.title = element_text(size = rel(1.3)),
               axis.text = element_text(size = rel(1.3)),
-              plot.title = element_text(size = rel(1.3)),
+              plot.title = element_text(size = rel(1.5), hjust = 1.2),
               legend.title = element_blank(),
-              legend.text = element_text(size = rel(1.15))
+              legend.text = element_text(size = rel(1.5))
             )
         } else {
           data <- hot_to_r(input$opRouteLv5)
@@ -952,7 +952,7 @@ server <- function(input, output, session) {
           options(scipen=10000)
           data %>%
             ggplot(., aes(x = Cumulative_Gold, y = Trophies)) +
-            geom_line() +
+            geom_line(size = 2) +
             theme_bw() +
             labs(
               x = "Cumulative Gold Spent",
@@ -962,7 +962,7 @@ server <- function(input, output, session) {
             theme(
               axis.title = element_text(size = rel(1.3)),
               axis.text = element_text(size = rel(1.3)),
-              plot.title = element_text(size = rel(1.3))
+              plot.title = element_text(size = rel(1.5), hjust = 1.2)
             )
         }
       }
