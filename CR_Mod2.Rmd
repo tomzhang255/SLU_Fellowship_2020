@@ -1,0 +1,121 @@
+---
+title: "CR_Mod2"
+author: "Tom Zhang"
+date: "5/25/2020"
+output: html_document
+---
+
+## Importing data for linear regression model
+```{r}
+library(tidyverse)
+library(broom)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+```
+
+
+## mod_day: trophies ~ day of the month
+```{r}
+df_day <-
+  cr_s3_df_ind_left %>%
+    select(leftstartingtrophies, battletime) %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth)
+
+mod_day <- lm(leftstartingtrophies ~ dayOfTheMonth, data = df_day)
+summary(mod_day)
+```
+
+
+## Cleaning up data for mod2v1
+```{r}
+df_mod2 <-
+  cr_s3_df_ind_left %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214)
+```
+
+
+## mod2v1: trophies ~ day + card indicators + card numeric level + (card numeric level)^2
+```{r}
+f1 <- as.formula(
+  paste(
+    "leftstartingtrophies ~",
+    paste(
+      c(
+        paste('`', names(df_mod2)[2:190], '`', sep = ''), # day + cards + levels
+        paste('I(`', names(df_mod2)[97:190], '`^2)', sep = '') # quadratic levels
+        ),
+      collapse = " + "
+      )
+    )
+  )
+
+mod2v1 <- lm(formula = f1, data = df_mod2)
+#summary(mod2v1)
+#names(coef(mod2v1))
+
+#tidy(mod2v1) # coefficients
+#glance(mod2v1) # goodness of fit summary
+```
+
+
+## mod_cardInt: trophies ~ cards + all 2-way card interactions
+```{r}
+df_cardInt <-
+  df_mod2 %>%
+    select(1, 3:96)
+
+t1_start <- Sys.time()
+mod_cardInt <- lm(leftstartingtrophies ~ (.)^2, data = df_cardInt) # all 2-way interactions (8.7 min)
+t1_end <- Sys.time()
+t1_end - t1_start
+
+#summary(mod_cardInt)
+#names(coef(mod_cardInt))[-1:-95]
+```
+
+
+## mod 2 v 2: trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
+```{r}
+f2 <- as.formula(
+  paste(
+    "leftstartingtrophies ~",
+    paste(
+      c(
+        paste('`', names(df_mod2)[2:190], '`', sep = ''), # day + cards + levels
+        paste('I(`', names(df_mod2)[97:190], '`^2)', sep = ''), # quadratic levels
+        names(coef(mod_cardInt))[-1:-95] # all 2-way card interactions
+        ),
+      collapse = " + "
+      )
+    )
+  )
+
+t2_start <- Sys.time()
+mod2v2 <- lm(formula = f2, data = df_mod2) # 10.2 min
+t2_end <- Sys.time()
+t2_end - t2_start
+
+#summary(mod2v2)
+tidy(mod2v2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
