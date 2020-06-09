@@ -83,13 +83,15 @@ df_mod2v2_aug <-
     select(1, 191:196)
 
 t3_end <- Sys.time() # about 56 min
+t3_end - t3_start
 
 df_mod2v2_aug # comparing observed and fitted for right deck
 ```
 
 
+## save prediction df
 ```{r}
-t3_end - t3_start
+write_csv(df_mod2v2_aug, "data/df_mod2v2_aug.csv")
 ```
 
 
