@@ -72,7 +72,7 @@ df_cardInt <-
     select(1, 3:96)
 
 t1_start <- Sys.time()
-mod_cardInt <- lm(leftstartingtrophies ~ (.)^2, data = df_cardInt) # all 2-way interactions (8.7 min)
+mod_cardInt <- lm(leftstartingtrophies ~ (.)^2, data = df_cardInt) # all 2-way interactions (7 min)
 t1_end <- Sys.time()
 t1_end - t1_start
 
@@ -98,7 +98,7 @@ f2 <- as.formula(
   )
 
 t2_start <- Sys.time()
-mod2v2 <- lm(formula = f2, data = df_mod2) # 10.2 min
+mod2v2 <- lm(formula = f2, data = df_mod2) # 7 min
 t2_end <- Sys.time()
 t2_end - t2_start
 
