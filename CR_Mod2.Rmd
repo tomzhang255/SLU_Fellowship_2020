@@ -9,6 +9,7 @@ output: html_document
 ```{r}
 library(tidyverse)
 library(broom)
+library(biglm)
 cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
 ```
 
@@ -27,6 +28,93 @@ df_day <-
 mod_day <- lm(leftstartingtrophies ~ dayOfTheMonth, data = df_day)
 summary(mod_day)
 ```
+
+
+## mod_day0: trophies ~ day of the month (but with < 4000 trophies - arena 1-12)
+```{r}
+df_day0 <-
+  cr_s3_df_ind_left %>%
+    filter(leftstartingtrophies < 4000) %>%
+    select(leftstartingtrophies, battletime) %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth)
+
+mod_day0 <- lm(leftstartingtrophies ~ dayOfTheMonth, data = df_day0)
+summary(mod_day0)
+```
+
+```{r}
+# trophies vs dayOfTheMonth plot for < 4000 trophies
+df_day0 %>%
+  ggplot(., aes(x = dayOfTheMonth, y = leftstartingtrophies)) +
+  geom_point() +
+  geom_smooth(method = "loess", color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    x = "Day of the Month",
+    y = "Left Starting Trophies",
+    title = "Scatterplot of Trophies vs Day of the Month for Arena 1-12 Matches\n(< 4000 Trophies)"
+  ) +
+  theme_bw()
+```
+
+
+
+
+## mod_day4000: trophies ~ day of the month (but with only 4000+ trophies - arena 13)
+```{r}
+# list of arena id in this df
+# 54000014 = Challenger III
+# arena 13 indicator?
+sort(unique(cr_s3_df_ind_left$arenaid))
+```
+
+```{r}
+df_day4000 <-
+  cr_s3_df_ind_left %>%
+    filter(leftstartingtrophies >= 4000) %>%
+    select(leftstartingtrophies, battletime) %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth)
+
+mod_day4000 <- lm(leftstartingtrophies ~ dayOfTheMonth, data = df_day4000)
+summary(mod_day4000)
+```
+
+```{r}
+# trophies vs dayOfTheMonth plot for 4000+ trophies
+df_day4000 %>%
+  ggplot(., aes(x = dayOfTheMonth, y = leftstartingtrophies)) +
+  geom_point() +
+  geom_smooth(method = "loess", color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(
+    x = "Day of the Month",
+    y = "Left Starting Trophies",
+    title = "Scatterplot of Trophies vs Day of the Month for Arena 13 Matches\n(4000+ Trophies)"
+  ) +
+  theme_bw()
+```
+
+
+
+
+## mod_day4000_biglm: Using biglm for mod_day4000
+```{r}
+mod_day4000_biglm <- biglm::biglm(leftstartingtrophies ~ dayOfTheMonth, data = df_day4000)
+summary(mod_day4000_biglm)
+# compare with lm()
+print("-----")
+summary(mod_day4000)
+```
+
+
 
 
 ## Cleaning up data for mod2v1
@@ -81,6 +169,37 @@ t1_end - t1_start
 ```
 
 
+
+
+## mod_cardInt_biglm: trophies ~ cards + all 2-way card interactions (biglm)
+```{r}
+df_cardInt <-
+  df_mod2 %>%
+    select(1, 3:96)
+
+fInt <- as.formula(
+  paste(
+    "leftstartingtrophies ~ (",
+    paste(
+      paste("`", names(df_cardInt)[-1], "`", sep = ""),
+      collapse = " + "
+    ),
+    ")^2"
+  )
+)
+
+t1_start <- Sys.time()
+mod_cardInt_biglm <- biglm::biglm(formula = fInt, data = df_cardInt)
+#mod_cardInt_biglm <- biglm::biglm(leftstartingtrophies ~ (.)^2, data = df_cardInt)
+t1_end <- Sys.time()
+t1_end - t1_start # 4 min
+
+#mod_cardInt_biglm$names[-1:-95]
+```
+
+
+
+
 ## mod 2 v 2: trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
 ```{r}
 f2 <- as.formula(
@@ -109,7 +228,30 @@ tidy(mod2v2)
 
 
 
+## mod 2 v 2 biglm: trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
+```{r}
+f2_biglm <- as.formula(
+  paste(
+    "leftstartingtrophies ~",
+    paste(
+      c(
+        paste('`', names(df_mod2)[2:190], '`', sep = ''), # day + cards + levels
+        paste('I(`', names(df_mod2)[97:190], '`^2)', sep = ''), # quadratic levels
+        mod_cardInt_biglm$names[-1:-95] # all 2-way card interactions
+        ),
+      collapse = " + "
+      )
+    )
+  )
 
+t2_start <- Sys.time()
+mod2v2_biglm <- biglm::biglm(formula = f2_biglm, data = df_mod2)
+t2_end <- Sys.time()
+t2_end - t2_start # 5 min
+
+#summary(mod2v2_biglm)
+tidy(mod2v2_biglm)
+```
 
 
 
