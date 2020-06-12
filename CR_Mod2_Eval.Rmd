@@ -450,6 +450,38 @@ df3 %>%
 
 
 
+## testing predict() for biglm
+## whether a random response column will work
+```{r}
+library(tidyverse)
+library(biglm)
+iris
+
+modTest <- biglm(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species, data = iris)
+summary(modTest)
+
+df_test <-
+  iris %>%
+    slice(1:5)
+
+predict(modTest, newdata = df_test)
+
+df_test2 <-
+  iris %>%
+    slice(1:5) %>%
+    mutate(Sepal.Length = 10000000000)
+
+predict(modTest, newdata = df_test2) # random values for the response column works
+```
+
+
+
+
+
+
+
+
+
 
 
 
