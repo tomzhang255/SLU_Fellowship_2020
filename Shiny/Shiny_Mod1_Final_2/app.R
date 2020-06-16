@@ -167,11 +167,14 @@ ui <- fluidPage(
                    ),
                    fluidRow(column(12, tags$h5("Player Tag"))),
                    fluidRow(
-                     column(6, textInput(inputId = "playerTag", label = NULL, value = "#9YJUPU9LY")),
+                     column(6, textInput(inputId = "playerTag", label = NULL, value = "")),
                      column(6, actionButton(inputId = "updateDeck", label = "Update Deck"))
                    ),
-                   fluidRow(column(6, tags$h5("Try Dr. Ramler's Deck: #XXXXXXXXX"))),
-                   br(),
+                   fluidRow(
+                     column(12, tags$h5("Try Tom's Deck: #9YJUPU9LY")),
+                     column(12, tags$h5("Try Dr. Ramler's Deck: #9U9Y02GPL")),
+                     column(12, tags$h5("Try Dr. Lee's Deck: #P9Y9VV2VC")),
+                     ),
                    br(),
                    br(),
                    br(),
@@ -252,15 +255,15 @@ server <- function(input, output, session) {
   # reactive values
   values <- reactiveValues()
   
-  values$playerDeck <- tibble(
-    playerCards = c("The Log", "Miner", "Electro Wizard", "Balloon", "Dark Prince", "Wizard", "Valkyrie", "Mini P.E.K.K.A"),
-    levels = c(11, 11, 11, 13, 13, 13, 13, 13)
-  )
-  
   # values$playerDeck <- tibble(
-  #   playerCards = c("Baby Dragon", "Goblin Hut", "Graveyard", "Knight", "The Log", "Musketeer", "Poison", "Guards"),
-  #   levels = c(11, 11, 10, 11, 11, 13, 11, 13)
+  #   playerCards = c("The Log", "Miner", "Electro Wizard", "Balloon", "Dark Prince", "Wizard", "Valkyrie", "Mini P.E.K.K.A"),
+  #   levels = c(11, 11, 11, 13, 13, 13, 13, 13)
   # )
+  
+  values$playerDeck <- tibble(
+    playerCards = c("Baby Dragon", "Goblin Hut", "Graveyard", "Knight", "The Log", "Musketeer", "Poison", "Guards"),
+    levels = c(11, 11, 10, 11, 11, 13, 11, 13)
+  )
   
   # update deck button
   observeEvent(input$updateDeck, {
