@@ -161,52 +161,42 @@ ui <- fluidPage(
         tabPanel(
           title = "Deck Comparison",
           fluidRow(
-            column(8,
+            column(4,
+                   # adding manual selection back
                    fluidRow(
                      column(12, tags$h4(tags$span(style="color:DodgerBlue", "Deck 1: Original Deck")), align = "center")
                    ),
-                   fluidRow(column(12, tags$h5("Player Tag"))),
                    fluidRow(
-                     column(6, textInput(inputId = "playerTag", label = NULL, value = "")),
-                     column(6, actionButton(inputId = "updateDeck", label = "Update Deck"))
+                     column(8, htmlOutput(outputId = "card1LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card1LvlLSelectorv5"))
                    ),
                    fluidRow(
-                     column(12, tags$h5("Try Tom's Deck: #9YJUPU9LY")),
-                     column(12, tags$h5("Try Dr. Ramler's Deck: #9U9Y02GPL")),
-                     column(12, tags$h5("Try Dr. Lee's Deck: #P9Y9VV2VC")),
-                     ),
-                   br(),
-                   br(),
-                   br(),
+                     column(8, htmlOutput(outputId = "card2LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card2LvlLSelectorv5"))
+                   ),
                    fluidRow(
-                     fluidRow(
-                       column(12, tags$h4(tags$span(style="color:DarkBlue", "Deck 2: Modifications to Deck 1")), align = "center")
-                     ),
-                     fluidRow(
-                       column(3, htmlOutput(outputId = "card1RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card2RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card3RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card4RSelectorv5"))
-                     ),
-                     fluidRow(
-                       column(3, htmlOutput(outputId = "card1LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card2LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card3LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card4LvlRSelectorv5"))
-                     ),
-                     br(),
-                     fluidRow(
-                       column(3, htmlOutput(outputId = "card5RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card6RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card7RSelectorv5")),
-                       column(3, htmlOutput(outputId = "card8RSelectorv5"))
-                     ),
-                     fluidRow(
-                       column(3, htmlOutput(outputId = "card5LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card6LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card7LvlRSelectorv5")),
-                       column(3, htmlOutput(outputId = "card8LvlRSelectorv5"))
-                     )
+                     column(8, htmlOutput(outputId = "card3LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card3LvlLSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card4LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card4LvlLSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card5LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card5LvlLSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card6LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card6LvlLSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card7LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card7LvlLSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card8LSelectorv5")),
+                     column(4, htmlOutput(outputId = "card8LvlLSelectorv5"))
                    )
             ),
             # layout modifications . . . 
@@ -217,9 +207,57 @@ ui <- fluidPage(
                    tags$br(),
                    fluidRow(
                      column(12, plotOutput(outputId = "barv5"))
+                   ),
+                   br(),
+                   fluidRow(column(12, tags$h5("Load Deck 1 with Player Tag"))),
+                   fluidRow(
+                     column(6, textInput(inputId = "playerTag", label = NULL, value = "")),
+                     column(6, actionButton(inputId = "updateDeck", label = "Load Deck"))
+                   ),
+                   fluidRow(
+                     column(12, tags$h5("Try Tom's Deck: #9YJUPU9LY")),
+                     column(12, tags$h5("Try Dr. Ramler's Deck: #9U9Y02GPL")),
+                     column(12, tags$h5("Try Dr. Lee's Deck: #P9Y9VV2VC")),
+                   )
+            ),
+            column(4,
+                   fluidRow(
+                     column(12, tags$h4(tags$span(style="color:DarkBlue", "Deck 2: Modifications to Deck 1")), align = "center")
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card1RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card1LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card2RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card2LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card3RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card3LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card4RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card4LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card5RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card5LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card6RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card6LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card7RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card7LvlRSelectorv5"))
+                   ),
+                   fluidRow(
+                     column(8, htmlOutput(outputId = "card8RSelectorv5")),
+                     column(4, htmlOutput(outputId = "card8LvlRSelectorv5"))
                    )
             )
-          ),
+          )
         ),
         tabPanel(
           title = "Upgrade Route",
@@ -265,6 +303,8 @@ server <- function(input, output, session) {
     levels = c(11, 11, 10, 11, 11, 13, 11, 13)
   )
   
+  
+  
   # update deck button
   observeEvent(input$updateDeck, {
     # alert
@@ -281,75 +321,142 @@ server <- function(input, output, session) {
       imageUrl = "",
       animation = TRUE
     )
-    
+
     values$playerDeck <- extractCard(input$playerTag)
+  })
+  
+  
+  
+  # reactive select boxes for left deck (can be pre-loaded from values$playerDeck <- playerTag)
+  output$card1LSelectorv5 <- renderUI({
+    selectInput(inputId = "card1Lv5", label = "Card 1", choices = cards, selected = values$playerDeck[[1,1]])
+  })
+  
+  output$card1LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card1LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[1,2]])
+  })
+  
+  output$card2LSelectorv5 <- renderUI({
+    selectInput(inputId = "card2Lv5", label = "Card 2", choices = cards, selected = values$playerDeck[[2,1]])
+  })
+  
+  output$card2LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card2LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[2,2]])
+  })
+  
+  output$card3LSelectorv5 <- renderUI({
+    selectInput(inputId = "card3Lv5", label = "Card 3", choices = cards, selected = values$playerDeck[[3,1]])
+  })
+  
+  output$card3LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card3LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[3,2]])
+  })
+  
+  output$card4LSelectorv5 <- renderUI({
+    selectInput(inputId = "card4Lv5", label = "Card 4", choices = cards, selected = values$playerDeck[[4,1]])
+  })
+  
+  output$card4LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card4LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[4,2]])
+  })
+  
+  output$card5LSelectorv5 <- renderUI({
+    selectInput(inputId = "card5Lv5", label = "Card 5", choices = cards, selected = values$playerDeck[[5,1]])
+  })
+  
+  output$card5LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card5LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[5,2]])
+  })
+  
+  output$card6LSelectorv5 <- renderUI({
+    selectInput(inputId = "card6Lv5", label = "Card 6", choices = cards, selected = values$playerDeck[[6,1]])
+  })
+  
+  output$card6LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card6LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[6,2]])
+  })
+  
+  output$card7LSelectorv5 <- renderUI({
+    selectInput(inputId = "card7Lv5", label = "Card 7", choices = cards, selected = values$playerDeck[[7,1]])
+  })
+  
+  output$card7LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card7LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[7,2]])
+  })
+  
+  output$card8LSelectorv5 <- renderUI({
+    selectInput(inputId = "card8Lv5", label = "Card 8", choices = cards, selected = values$playerDeck[[8,1]])
+  })
+  
+  output$card8LvlLSelectorv5 <- renderUI({
+    numericInput(inputId = "card8LvlLv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[8,2]])
   })
   
   
   
   # reactive select boxes for right deck
   output$card1RSelectorv5 <- renderUI({
-    selectInput(inputId = "card1Rv5", label = "Card 1", choices = cards, selected = values$playerDeck[[1,1]])
+    selectInput(inputId = "card1Rv5", label = "Card 1", choices = cards, selected = input$card1Lv5)
   })
   
   output$card1LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card1LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[1,2]])
+    numericInput(inputId = "card1LvlRv5", label = "Level", min = 1, max = 13, value = input$card1LvlLv5)
   })
   
   output$card2RSelectorv5 <- renderUI({
-    selectInput(inputId = "card2Rv5", label = "Card 2", choices = cards, selected = values$playerDeck[[2,1]])
+    selectInput(inputId = "card2Rv5", label = "Card 2", choices = cards, selected = input$card2Lv5)
   })
   
   output$card2LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card2LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[2,2]])
+    numericInput(inputId = "card2LvlRv5", label = "Level", min = 1, max = 13, value = input$card2LvlLv5)
   })
   
   output$card3RSelectorv5 <- renderUI({
-    selectInput(inputId = "card3Rv5", label = "Card 3", choices = cards, selected = values$playerDeck[[3,1]])
+    selectInput(inputId = "card3Rv5", label = "Card 3", choices = cards, selected = input$card3Lv5)
   })
   
   output$card3LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card3LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[3,2]])
+    numericInput(inputId = "card3LvlRv5", label = "Level", min = 1, max = 13, value = input$card3LvlLv5)
   })
   
   output$card4RSelectorv5 <- renderUI({
-    selectInput(inputId = "card4Rv5", label = "Card 4", choices = cards, selected = values$playerDeck[[4,1]])
+    selectInput(inputId = "card4Rv5", label = "Card 4", choices = cards, selected = input$card4Lv5)
   })
   
   output$card4LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card4LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[4,2]])
+    numericInput(inputId = "card4LvlRv5", label = "Level", min = 1, max = 13, value = input$card4LvlLv5)
   })
   
   output$card5RSelectorv5 <- renderUI({
-    selectInput(inputId = "card5Rv5", label = "Card 5", choices = cards, selected = values$playerDeck[[5,1]])
+    selectInput(inputId = "card5Rv5", label = "Card 5", choices = cards, selected = input$card5Lv5)
   })
   
   output$card5LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card5LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[5,2]])
+    numericInput(inputId = "card5LvlRv5", label = "Level", min = 1, max = 13, value = input$card5LvlLv5)
   })
   
   output$card6RSelectorv5 <- renderUI({
-    selectInput(inputId = "card6Rv5", label = "Card 6", choices = cards, selected = values$playerDeck[[6,1]])
+    selectInput(inputId = "card6Rv5", label = "Card 6", choices = cards, selected = input$card6Lv5)
   })
   
   output$card6LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card6LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[6,2]])
+    numericInput(inputId = "card6LvlRv5", label = "Level", min = 1, max = 13, value = input$card6LvlLv5)
   })
   
   output$card7RSelectorv5 <- renderUI({
-    selectInput(inputId = "card7Rv5", label = "Card 7", choices = cards, selected = values$playerDeck[[7,1]])
+    selectInput(inputId = "card7Rv5", label = "Card 7", choices = cards, selected = input$card7Lv5)
   })
   
   output$card7LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card7LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[7,2]])
+    numericInput(inputId = "card7LvlRv5", label = "Level", min = 1, max = 13, value = input$card7LvlLv5)
   })
   
   output$card8RSelectorv5 <- renderUI({
-    selectInput(inputId = "card8Rv5", label = "Card 8", choices = cards, selected = values$playerDeck[[8,1]])
+    selectInput(inputId = "card8Rv5", label = "Card 8", choices = cards, selected = input$card8Lv5)
   })
   
   output$card8LvlRSelectorv5 <- renderUI({
-    numericInput(inputId = "card8LvlRv5", label = "Level", min = 1, max = 13, value = values$playerDeck[[8,2]])
+    numericInput(inputId = "card8LvlRv5", label = "Level", min = 1, max = 13, value = input$card8LvlLv5)
   })
   
   
@@ -357,7 +464,7 @@ server <- function(input, output, session) {
   # for card icons of left deck
   output$card1Icon <- renderUI({
     for (icon1 in 1:length(cards_s12)) {
-      if (cards_s12[icon1] == values$playerDeck[[1,1]]) {
+      if (cards_s12[icon1] == input$card1Lv5) {
         icon1URL <-  cr_cards_s12$iconUrl[icon1]
       }
     }
@@ -367,7 +474,7 @@ server <- function(input, output, session) {
   
   output$card2Icon <- renderUI({
     for (icon2 in 1:length(cards_s12)) {
-      if (cards_s12[icon2] == values$playerDeck[[2,1]]) {
+      if (cards_s12[icon2] == input$card2Lv5) {
         icon2URL <-  cr_cards_s12$iconUrl[icon2]
       }
     }
@@ -377,7 +484,7 @@ server <- function(input, output, session) {
   
   output$card3Icon <- renderUI({
     for (icon3 in 1:length(cards_s12)) {
-      if (cards_s12[icon3] == values$playerDeck[[3,1]]) {
+      if (cards_s12[icon3] == input$card3Lv5) {
         icon3URL <-  cr_cards_s12$iconUrl[icon3]
       }
     }
@@ -387,7 +494,7 @@ server <- function(input, output, session) {
   
   output$card4Icon <- renderUI({
     for (icon4 in 1:length(cards_s12)) {
-      if (cards_s12[icon4] == values$playerDeck[[4,1]]) {
+      if (cards_s12[icon4] == input$card4Lv5) {
         icon4URL <-  cr_cards_s12$iconUrl[icon4]
       }
     }
@@ -397,7 +504,7 @@ server <- function(input, output, session) {
   
   output$card5Icon <- renderUI({
     for (icon5 in 1:length(cards_s12)) {
-      if (cards_s12[icon5] == values$playerDeck[[5,1]]) {
+      if (cards_s12[icon5] == input$card5Lv5) {
         icon5URL <-  cr_cards_s12$iconUrl[icon5]
       }
     }
@@ -407,7 +514,7 @@ server <- function(input, output, session) {
   
   output$card6Icon <- renderUI({
     for (icon6 in 1:length(cards_s12)) {
-      if (cards_s12[icon6] == values$playerDeck[[6,1]]) {
+      if (cards_s12[icon6] == input$card6Lv5) {
         icon6URL <-  cr_cards_s12$iconUrl[icon6]
       }
     }
@@ -417,7 +524,7 @@ server <- function(input, output, session) {
   
   output$card7Icon <- renderUI({
     for (icon7 in 1:length(cards_s12)) {
-      if (cards_s12[icon7] == values$playerDeck[[7,1]]) {
+      if (cards_s12[icon7] == input$card7Lv5) {
         icon7URL <-  cr_cards_s12$iconUrl[icon7]
       }
     }
@@ -427,7 +534,7 @@ server <- function(input, output, session) {
   
   output$card8Icon <- renderUI({
     for (icon8 in 1:length(cards_s12)) {
-      if (cards_s12[icon8] == values$playerDeck[[8,1]]) {
+      if (cards_s12[icon8] == input$card8Lv5) {
         icon8URL <-  cr_cards_s12$iconUrl[icon8]
       }
     }
@@ -522,35 +629,35 @@ server <- function(input, output, session) {
   
   # for card icon levels of left deck
   output$card1IconLvl <- renderText({
-    paste("Level", values$playerDeck[[1,2]])
+    paste("Level", input$card1LvlLv5)
   })
   
   output$card2IconLvl <- renderText({
-    paste("Level", values$playerDeck[[2,2]])
+    paste("Level", input$card2LvlLv5)
   })
   
   output$card3IconLvl <- renderText({
-    paste("Level", values$playerDeck[[3,2]])
+    paste("Level", input$card3LvlLv5)
   })
   
   output$card4IconLvl <- renderText({
-    paste("Level", values$playerDeck[[4,2]])
+    paste("Level", input$card4LvlLv5)
   })
   
   output$card5IconLvl <- renderText({
-    paste("Level", values$playerDeck[[5,2]])
+    paste("Level", input$card5LvlLv5)
   })
   
   output$card6IconLvl <- renderText({
-    paste("Level", values$playerDeck[[6,2]])
+    paste("Level", input$card6LvlLv5)
   })
   
   output$card7IconLvl <- renderText({
-    paste("Level", values$playerDeck[[7,2]])
+    paste("Level", input$card7LvlLv5)
   })
   
   output$card8IconLvl <- renderText({
-    paste("Level", values$playerDeck[[8,2]])
+    paste("Level", input$card8LvlLv5)
   })
   
   
@@ -606,7 +713,7 @@ server <- function(input, output, session) {
     newxLv5 <- newxEmpty
     
     # process selected cards
-    cardsInputLv5 <- c(values$playerDeck[[1,1]], values$playerDeck[[2,1]], values$playerDeck[[3,1]], values$playerDeck[[4,1]], values$playerDeck[[5,1]], values$playerDeck[[6,1]], values$playerDeck[[7,1]], values$playerDeck[[8,1]])
+    cardsInputLv5 <- c(input$card1Lv5, input$card2Lv5, input$card3Lv5, input$card4Lv5, input$card5Lv5, input$card6Lv5, input$card7Lv5, input$card8Lv5)
     
     for (av5 in 1:length(cardsInputLv5)) {
       for (bv5 in 1:length(names(newxLv5))) {
@@ -617,7 +724,7 @@ server <- function(input, output, session) {
     }
     
     # process selected levels
-    lvlInputLv5 <- c(values$playerDeck[[1,2]], values$playerDeck[[2,2]], values$playerDeck[[3,2]], values$playerDeck[[4,2]], values$playerDeck[[5,2]], values$playerDeck[[6,2]], values$playerDeck[[7,2]], values$playerDeck[[8,2]])
+    lvlInputLv5 <- c(input$card1LvlLv5, input$card2LvlLv5, input$card3LvlLv5, input$card4LvlLv5, input$card5LvlLv5, input$card6LvlLv5, input$card7LvlLv5, input$card8LvlLv5)
     
     cardsInputCleanLv5 <- str_remove_all(cardsInputLv5, "\\.|-")
     cardsInputCleanLv5 <- paste(cardsInputCleanLv5, "Lvl")
@@ -728,8 +835,8 @@ server <- function(input, output, session) {
       
       # the current most updated optimized deck (starting from no upgrades)
       opDeckLv5 <- tibble(
-        card = c(values$playerDeck[[1,1]], values$playerDeck[[2,1]], values$playerDeck[[3,1]], values$playerDeck[[4,1]], values$playerDeck[[5,1]], values$playerDeck[[6,1]], values$playerDeck[[7,1]], values$playerDeck[[8,1]]),
-        level = c(values$playerDeck[[1,2]], values$playerDeck[[2,2]], values$playerDeck[[3,2]], values$playerDeck[[4,2]], values$playerDeck[[5,2]], values$playerDeck[[6,2]], values$playerDeck[[7,2]], values$playerDeck[[8,2]])
+        card = c(input$card1Lv5, input$card2Lv5, input$card3Lv5, input$card4Lv5, input$card5Lv5, input$card6Lv5, input$card7Lv5, input$card8Lv5),
+        level = c(input$card1LvlLv5, input$card2LvlLv5, input$card3LvlLv5, input$card4LvlLv5, input$card5LvlLv5, input$card6LvlLv5, input$card7LvlLv5, input$card8LvlLv5)
       )
       
       # build an empty route data frame
