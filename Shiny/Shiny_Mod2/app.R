@@ -177,6 +177,10 @@ ui <- fluidPage(
         column(3, textOutput(outputId = "card6IconLvlD2"), align = "center"),
         column(3, textOutput(outputId = "card7IconLvlD2"), align = "center"),
         column(3, textOutput(outputId = "card8IconLvlD2"), align = "center")
+      ),
+      br(),
+      fluidRow(
+        column(12, tags$h5("Note: New cards released after season 11 are not available in this app; please select any substitutes accordingly."))
       )
     ),
     mainPanel(
@@ -422,66 +426,82 @@ server <- function(input, output, session) {
   
   # reactive select boxes for right deck
   output$card1RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card1Rv5", label = "Card 1", choices = cards, selected = input$card1Lv5)
   })
   
   output$card1LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card1LvlRv5", label = "Level", min = 1, max = 13, value = input$card1LvlLv5)
   })
   
   output$card2RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card2Rv5", label = "Card 2", choices = cards, selected = input$card2Lv5)
   })
   
   output$card2LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card2LvlRv5", label = "Level", min = 1, max = 13, value = input$card2LvlLv5)
   })
   
   output$card3RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card3Rv5", label = "Card 3", choices = cards, selected = input$card3Lv5)
   })
   
   output$card3LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card3LvlRv5", label = "Level", min = 1, max = 13, value = input$card3LvlLv5)
   })
   
   output$card4RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card4Rv5", label = "Card 4", choices = cards, selected = input$card4Lv5)
   })
   
   output$card4LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card4LvlRv5", label = "Level", min = 1, max = 13, value = input$card4LvlLv5)
   })
   
   output$card5RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card5Rv5", label = "Card 5", choices = cards, selected = input$card5Lv5)
   })
   
   output$card5LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card5LvlRv5", label = "Level", min = 1, max = 13, value = input$card5LvlLv5)
   })
   
   output$card6RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card6Rv5", label = "Card 6", choices = cards, selected = input$card6Lv5)
   })
   
   output$card6LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card6LvlRv5", label = "Level", min = 1, max = 13, value = input$card6LvlLv5)
   })
   
   output$card7RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card7Rv5", label = "Card 7", choices = cards, selected = input$card7Lv5)
   })
   
   output$card7LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card7LvlRv5", label = "Level", min = 1, max = 13, value = input$card7LvlLv5)
   })
   
   output$card8RSelectorv5 <- renderUI({
+    values$playerDeck
     selectInput(inputId = "card8Rv5", label = "Card 8", choices = cards, selected = input$card8Lv5)
   })
   
   output$card8LvlRSelectorv5 <- renderUI({
+    values$playerDeck
     numericInput(inputId = "card8LvlRv5", label = "Level", min = 1, max = 13, value = input$card8LvlLv5)
   })
   
