@@ -119,73 +119,85 @@ ui <- fluidPage(
              ".shiny-output-error:before { visibility: hidden; }"
   ),
   useShinyalert(),
-  fluidRow(column(12, tags$h3("Predicting Trophies for Clash Royale Season 11"))),
+  fluidRow(column(12, tags$h3("Clash Royale Card-Upgrade Investigation (Season 11)"))),
   sidebarLayout(
-    sidebarPanel(
-      width = 4,
-      fluidRow(
-        column(12, tags$h4("Deck 1"), align = "center")
-      ),
-      fluidRow(
-        column(3, uiOutput(outputId = "card1Icon")),
-        column(3, uiOutput(outputId = "card2Icon")),
-        column(3, uiOutput(outputId = "card3Icon")),
-        column(3, uiOutput(outputId = "card4Icon"))
-      ),
-      fluidRow(
-        column(3, textOutput(outputId = "card1IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card2IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card3IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card4IconLvl"), align = "center")
-      ),
-      fluidRow(
-        column(3, uiOutput(outputId = "card5Icon")),
-        column(3, uiOutput(outputId = "card6Icon")),
-        column(3, uiOutput(outputId = "card7Icon")),
-        column(3, uiOutput(outputId = "card8Icon"))
-      ),
-      fluidRow(
-        column(3, textOutput(outputId = "card5IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card6IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card7IconLvl"), align = "center"),
-        column(3, textOutput(outputId = "card8IconLvl"), align = "center")
-      ),
-      br(),
-      fluidRow(
-        column(12, tags$h4("Deck 2"), align = "center")
-      ),
-      fluidRow(
-        column(3, uiOutput(outputId = "card1IconD2")),
-        column(3, uiOutput(outputId = "card2IconD2")),
-        column(3, uiOutput(outputId = "card3IconD2")),
-        column(3, uiOutput(outputId = "card4IconD2"))
-      ),
-      fluidRow(
-        column(3, textOutput(outputId = "card1IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card2IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card3IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card4IconLvlD2"), align = "center")
-      ),
-      fluidRow(
-        column(3, uiOutput(outputId = "card5IconD2")),
-        column(3, uiOutput(outputId = "card6IconD2")),
-        column(3, uiOutput(outputId = "card7IconD2")),
-        column(3, uiOutput(outputId = "card8IconD2"))
-      ),
-      fluidRow(
-        column(3, textOutput(outputId = "card5IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card6IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card7IconLvlD2"), align = "center"),
-        column(3, textOutput(outputId = "card8IconLvlD2"), align = "center")
-      ),
-      br(),
-      fluidRow(
-        column(12, tags$h5("Note: New cards released after season 11 are not available in this app; please select any substitutes accordingly."))
+    conditionalPanel(
+      condition = "input.tabs != 'Info'",
+      sidebarPanel(
+        width = 4,
+        fluidRow(
+          column(12, tags$h4("Deck 1"), align = "center")
+        ),
+        fluidRow(
+          column(3, uiOutput(outputId = "card1Icon")),
+          column(3, uiOutput(outputId = "card2Icon")),
+          column(3, uiOutput(outputId = "card3Icon")),
+          column(3, uiOutput(outputId = "card4Icon"))
+        ),
+        fluidRow(
+          column(3, textOutput(outputId = "card1IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card2IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card3IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card4IconLvl"), align = "center")
+        ),
+        fluidRow(
+          column(3, uiOutput(outputId = "card5Icon")),
+          column(3, uiOutput(outputId = "card6Icon")),
+          column(3, uiOutput(outputId = "card7Icon")),
+          column(3, uiOutput(outputId = "card8Icon"))
+        ),
+        fluidRow(
+          column(3, textOutput(outputId = "card5IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card6IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card7IconLvl"), align = "center"),
+          column(3, textOutput(outputId = "card8IconLvl"), align = "center")
+        ),
+        br(),
+        fluidRow(
+          column(12, tags$h4("Deck 2"), align = "center")
+        ),
+        fluidRow(
+          column(3, uiOutput(outputId = "card1IconD2")),
+          column(3, uiOutput(outputId = "card2IconD2")),
+          column(3, uiOutput(outputId = "card3IconD2")),
+          column(3, uiOutput(outputId = "card4IconD2"))
+        ),
+        fluidRow(
+          column(3, textOutput(outputId = "card1IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card2IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card3IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card4IconLvlD2"), align = "center")
+        ),
+        fluidRow(
+          column(3, uiOutput(outputId = "card5IconD2")),
+          column(3, uiOutput(outputId = "card6IconD2")),
+          column(3, uiOutput(outputId = "card7IconD2")),
+          column(3, uiOutput(outputId = "card8IconD2"))
+        ),
+        fluidRow(
+          column(3, textOutput(outputId = "card5IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card6IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card7IconLvlD2"), align = "center"),
+          column(3, textOutput(outputId = "card8IconLvlD2"), align = "center")
+        )
       )
     ),
     mainPanel(
       tabsetPanel(
-        id = "inTabset",
+        id = "tabs",
+        tabPanel(
+          title = "Info",
+          fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
+          fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route."))),
+          br(),
+          fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
+          fluidRow(column(12, tags$h4('Under the "Deck Comparison" tab, the user will be able to build two decks and compare their trophies predicted by our model. To build Deck 1, the user can either select 8 cards manually or load a deck with their player tag. As for Deck 2, its composition depends on Deck 1. That is, whenever Deck 1 is altered, Deck 2 gets updated automatically. However, directly modifying Deck 2 will not affect Deck 1.'))),
+          fluidRow(column(12, tags$h4(tags$em("Note: New cards released after season 11 are not available in this app; please select any substitutes accordingly.")))),
+          br(),
+          fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Upgrade Route")))),
+          fluidRow(column(12, tags$h4('Under the "Upgrade Route" tab, the app will generate a table of the optimized upgrade route for Deck 1. Each row will be an available upgrade for the deck, until every card has reached maximum level. The suggested steps are arranged based on the cost-effectiveness of the upgrades (trophy gain per 1000 gold spent). To visualize the upgrade route, this app also provides a plot of trophies vs cumulative gold spent.'))),
+          fluidRow(column(12, tags$h4(tags$em('Note: The rows in the table are adjustable; simply drag them around to change the order. Then, click on "Update Plot" button to see how the path changes.'))))
+        ),
         tabPanel(
           title = "Deck Comparison",
           fluidRow(
