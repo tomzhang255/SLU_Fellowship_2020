@@ -246,7 +246,7 @@ ui <- fluidPage(
                    ),
                    tags$br(),
                    fluidRow(
-                     column(12, plotOutput(outputId = "barv5"))
+                     column(12, plotOutput(outputId = "barv5", height = "300px"))
                    ),
                    br(),
                    fluidRow(column(12, selectInput(inputId = "playerClass", label = "Player Classification", choices = playerClass$class, selected = playerClass$class[2]))),
