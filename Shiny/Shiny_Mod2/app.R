@@ -244,7 +244,7 @@ ui <- fluidPage(
                    fluidRow(
                      column(12, tags$h3("Predicted Trophies"), align = "center")
                    ),
-                   tags$br(),
+                   #tags$br(),
                    fluidRow(
                      column(12, plotOutput(outputId = "barv5", height = "300px"))
                    ),

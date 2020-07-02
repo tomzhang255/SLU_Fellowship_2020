@@ -5,8 +5,8 @@ account: tomzhang0719
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2505350
-bundleId: 3340882
+bundleId: 3344477
 url: https://tomzhang0719.shinyapps.io/Shiny_Mod2/
-when: 1593637071.19799
+when: 1593707731.94696
 asMultiple: FALSE
 asStatic: FALSE
