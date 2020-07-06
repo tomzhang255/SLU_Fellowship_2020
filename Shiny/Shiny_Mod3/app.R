@@ -5,7 +5,6 @@ library(shinyalert)
 library(rhandsontable)
 library(rvest)
 library(plotly)
-library(quantreg)
 
 # the model
 mod3 <- readRDS("mod_4000_s11_lm_2_strip.rds")
@@ -111,12 +110,12 @@ ui <- fluidPage(
              ".shiny-output-error:before { visibility: hidden; }"
   ),
   useShinyalert(),
-  fluidRow(column(12, tags$h3("Clash Royale Card-Upgrade Investigation (Season 11)"))),
+  fluidRow(column(12, tags$h3("Clash Royale Card-Upgrade Investigation"))),
   sidebarLayout(
     conditionalPanel(
       condition = "input.tabs != 'Info'",
       sidebarPanel(
-        width = 4,
+        width = 3,
         fluidRow(
           column(12, tags$h4("Deck 1"), align = "center")
         ),
@@ -175,16 +174,18 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
+      width = 9,
       tabsetPanel(
         id = "tabs",
         tabPanel(
           title = "Info",
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
           fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route."))),
+          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/6/2020")))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
-          fluidRow(column(12, tags$h4('Under the "Deck Comparison" tab, the user will be able to build two decks and compare their trophies predicted by our model. To build Deck 1, the user can either select 8 cards manually or load a deck with their player tag. As for Deck 2, its composition depends on Deck 1. That is, whenever Deck 1 is altered, Deck 2 gets updated automatically. However, directly modifying Deck 2 will not affect Deck 1.'))),
-          fluidRow(column(12, tags$h4(tags$em("Note: New cards released after season 11 are not available in this app; please select any substitutes accordingly.")))),
+          fluidRow(column(12, tags$h4('Under the "Deck Comparison" tab, the user will be able to build two decks and compare their trophies predicted by our model. To build Deck 1, the user can either select 8 cards manually or load a deck with their player tag. As for Deck 2, its composition depends on Deck 1. That is, whenever Deck 1 is altered, Deck 2 gets updated automatically. However, directly modifying Deck 2 will not affect Deck 1. Further, all predictions made are for the end of the season.'))),
+          fluidRow(column(12, tags$h4(tags$em("Note: New cards are not available in this app until after they have been in play at least one full season; please select any substitutes accordingly.")))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Upgrade Route")))),
           fluidRow(column(12, tags$h4('Under the "Upgrade Route" tab, the app will generate a table of the optimized upgrade route for Deck 1. Each row will be an available upgrade for the deck, until every card has reached maximum level. The suggested steps are arranged based on the cost-effectiveness of the upgrades (trophy gain per 1000 gold spent). To visualize the upgrade route, this app also provides a plot of trophies vs cumulative gold spent.'))),
@@ -309,7 +310,7 @@ ui <- fluidPage(
                    fluidRow(column(12, tags$h5(textOutput(outputId = "noteRoute"))))
             ),
             column(5,
-                   fluidRow(tags$h4(textOutput(outputId = "plotTitle"))),
+                   fluidRow(column(12, tags$h4(textOutput(outputId = "plotTitle")))),
                    fluidRow(column(12, plotlyOutput(outputId = "geomLine")))
             )
           )
@@ -677,70 +678,70 @@ server <- function(input, output, session) {
   
   # for card icon levels of left deck
   output$card1IconLvl <- renderText({
-    paste("Level", input$card1LvlLv5)
+    paste("lvl", input$card1LvlLv5)
   })
   
   output$card2IconLvl <- renderText({
-    paste("Level", input$card2LvlLv5)
+    paste("lvl", input$card2LvlLv5)
   })
   
   output$card3IconLvl <- renderText({
-    paste("Level", input$card3LvlLv5)
+    paste("lvl", input$card3LvlLv5)
   })
   
   output$card4IconLvl <- renderText({
-    paste("Level", input$card4LvlLv5)
+    paste("lvl", input$card4LvlLv5)
   })
   
   output$card5IconLvl <- renderText({
-    paste("Level", input$card5LvlLv5)
+    paste("lvl", input$card5LvlLv5)
   })
   
   output$card6IconLvl <- renderText({
-    paste("Level", input$card6LvlLv5)
+    paste("lvl", input$card6LvlLv5)
   })
   
   output$card7IconLvl <- renderText({
-    paste("Level", input$card7LvlLv5)
+    paste("lvl", input$card7LvlLv5)
   })
   
   output$card8IconLvl <- renderText({
-    paste("Level", input$card8LvlLv5)
+    paste("lvl", input$card8LvlLv5)
   })
   
   
   
   # for card icon levels of right deck
   output$card1IconLvlD2 <- renderText({
-    paste("Level", input$card1LvlRv5)
+    paste("lvl", input$card1LvlRv5)
   })
   
   output$card2IconLvlD2 <- renderText({
-    paste("Level", input$card2LvlRv5)
+    paste("lvl", input$card2LvlRv5)
   })
   
   output$card3IconLvlD2 <- renderText({
-    paste("Level", input$card3LvlRv5)
+    paste("lvl", input$card3LvlRv5)
   })
   
   output$card4IconLvlD2 <- renderText({
-    paste("Level", input$card4LvlRv5)
+    paste("lvl", input$card4LvlRv5)
   })
   
   output$card5IconLvlD2 <- renderText({
-    paste("Level", input$card5LvlRv5)
+    paste("lvl", input$card5LvlRv5)
   })
   
   output$card6IconLvlD2 <- renderText({
-    paste("Level", input$card6LvlRv5)
+    paste("lvl", input$card6LvlRv5)
   })
   
   output$card7IconLvlD2 <- renderText({
-    paste("Level", input$card7LvlRv5)
+    paste("lvl", input$card7LvlRv5)
   })
   
   output$card8IconLvlD2 <- renderText({
-    paste("Level", input$card8LvlRv5)
+    paste("lvl", input$card8LvlRv5)
   })
   
   
@@ -912,7 +913,7 @@ server <- function(input, output, session) {
   
   # interpretation note
   output$interpretNote <- renderText({
-    paste("Interpretation: For instance,", values$left95, "is the 95th percentile trophy for all players using Deck 1")
+    paste("Interpretation: For instance,", values$left95, "is the estimated 95th percentile trophy rating for all players using Deck 1. If you are above that rating, then you are in the top 5% of players with a similar deck.")
   })
   
   
