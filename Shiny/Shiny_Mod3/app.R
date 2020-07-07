@@ -1,5 +1,4 @@
 library(shiny)
-library(shinydashboard)
 library(tidyverse)
 library(shinyalert)
 library(rhandsontable)
@@ -7,7 +6,7 @@ library(rvest)
 library(plotly)
 
 # the model
-mod3 <- readRDS("mod_4000_s11_lm_2_strip.rds")
+mod3 <- readRDS("mod_4000_s12_lm_2_strip.rds")
 df_mod3 <- read_csv("df_mod3.csv")
 
 # create empty data frame for predictions
@@ -181,7 +180,7 @@ ui <- fluidPage(
           title = "Info",
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
           fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route."))),
-          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/6/2020")))),
+          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/7/2020")))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
           fluidRow(column(12, tags$h4('Under the "Deck Comparison" tab, the user will be able to build two decks and compare their trophies predicted by our model. To build Deck 1, the user can either select 8 cards manually or load a deck with their player tag. As for Deck 2, its composition depends on Deck 1. That is, whenever Deck 1 is altered, Deck 2 gets updated automatically. However, directly modifying Deck 2 will not affect Deck 1. Further, all predictions made are for the end of the season.'))),
