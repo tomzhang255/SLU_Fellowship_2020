@@ -248,9 +248,9 @@ ui <- fluidPage(
                      column(6, actionButton(inputId = "updateDeck", label = "Load Deck"))
                    ),
                    fluidRow(
-                     column(12, tags$h5("Try Tom's Deck: #9YJUPU9LY")),
-                     column(12, tags$h5("Try Dr. Ramler's Deck: #9U9Y02GPL")),
-                     column(12, tags$h5("Try Dr. Lee's Deck: #P9Y9VV2VC")),
+                     column(12, tags$h5("Try Tommy Z-7's Deck: #9YJUPU9LY")),
+                     column(12, tags$h5("Try Morderth's Deck: #9U9Y02GPL")),
+                     column(12, tags$h5("Try PatienceV's Deck: #P9Y9VV2VC")),
                    )
             ),
             column(4,
