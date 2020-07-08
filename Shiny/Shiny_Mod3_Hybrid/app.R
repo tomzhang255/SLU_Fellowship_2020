@@ -103,6 +103,47 @@ residAdj <- read_csv("residualAdj.csv")
 
 
 
+
+
+
+
+# modify window selector page
+mwsSelectorPage2 <- function(win_titles) {
+  #  get each of the windows to select
+  win_select <- lapply(seq_along(win_titles), function(i) {
+    # get each of the titles
+    win_title <- win_titles[[i]]
+    # create a link for each window
+    tags$h2(
+      tags$a(href = paste0("?",win_title),
+             paste(i, ". ", win_title, sep = "")
+      ),
+      align = "center"
+    )
+  })
+  
+  # create and return the window selector page
+  shiny::bootstrapPage(
+    shiny::div(class = "Window",
+               shiny::div(
+                 style = htmltools::css(
+                   position = "absolute", top = "50%", left = "50%",
+                   margin_right = "-50%", transform = "translate(-50%, -50%)"),
+                 list(tags$h1("Pick Your Device:", align = "center"), tags$br(), win_select[1], tags$br(), win_select[2]) # specific for 2-window app
+               )
+    )
+  )
+}
+
+environment(mwsSelectorPage2) <- asNamespace('mwshiny')
+assignInNamespace("mwsSelectorPage", mwsSelectorPage2, ns = "mwshiny")
+
+
+
+
+
+
+
 # UI
 ui_list <- list()
 

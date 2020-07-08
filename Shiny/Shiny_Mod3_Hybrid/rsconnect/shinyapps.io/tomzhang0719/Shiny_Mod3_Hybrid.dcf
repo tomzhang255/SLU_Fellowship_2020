@@ -5,8 +5,8 @@ account: tomzhang0719
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2549254
-bundleId: 3368085
+bundleId: 3368982
 url: https://tomzhang0719.shinyapps.io/Shiny_Mod3_Hybrid/
-when: 1594226860.12049
+when: 1594242119.02736
 asMultiple: FALSE
 asStatic: FALSE
