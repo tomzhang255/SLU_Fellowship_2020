@@ -353,7 +353,8 @@ ui_list[["Desktop"]] <- fluidPage(
           fluidRow(
             column(7,
                    fluidRow(column(12, rHandsontableOutput(outputId = "opRouteLv5"))),
-                   fluidRow(column(12, tags$h5(textOutput(outputId = "noteRoute"))))
+                   fluidRow(column(12, tags$h5(textOutput(outputId = "noteRoute")))),
+                   fluidRow(column(12, tags$h5(tags$span(style = "color:DarkBlue", htmlOutput(outputId = "feedback")))))
             ),
             column(5,
                    fluidRow(column(12, tags$h4(textOutput(outputId = "plotTitle")))),
@@ -590,9 +591,9 @@ ui_list[["Mobile"]] <- f7Page(
         ),
         f7Card(
           textOutput(outputId = "plotTitleM"),
-          plotlyOutput(outputId = "geomLineM")
+          plotlyOutput(outputId = "geomLineM"),
+          footer = tags$span(style = "color:DarkBlue", htmlOutput(outputId = "feedbackM"))
         )
-        
         
         
         
@@ -1872,6 +1873,22 @@ output$noteRoute <- function(input, sess) {
 
 
 
+# feedback message
+output$feedback <- function(input, sess) {
+  renderUI({
+    if (is.null(input$opRouteLv5)) {
+      return (NULL)
+    } else {
+      tagList(
+        'Have any feedback to help us improve the site? Please visit the Google Form at:',
+        tags$a("https://forms.gle/et4joTJgr151Chqk9", href = "https://forms.gle/et4joTJgr151Chqk9")
+      )
+    }
+  })
+}
+
+
+
 # plot title
 output$plotTitle <- function(input, sess) {
   renderText({
@@ -2717,6 +2734,22 @@ output$noteRouteM <- function(input, sess) {
       return (NULL)
     } else {
       'Note: The rows in the table are adjustable; simply drag them around to change the order. Then, click on "Update Plot" button to see how the path changes. Also, all trophy predictions here are in the 50th percentile.'
+    }
+  })
+}
+
+
+
+# route note
+output$feedbackM <- function(input, sess) {
+  renderUI({
+    if (is.null(input$opRouteLv5M)) {
+      return (NULL)
+    } else {
+      tagList(
+        'Have any feedback to help us improve the site? Please visit the Google Form at:',
+        f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)
+      )
     }
   })
 }
