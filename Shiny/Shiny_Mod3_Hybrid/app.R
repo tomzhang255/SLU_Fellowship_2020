@@ -1891,7 +1891,7 @@ output$geomLine <- function(input, sess) {
     if (is.null(input$opRouteLv5)) {
       return(NULL)
     } else {# "2" temporary bug fix
-      if (values$viewCounter == 2 | values$viewCounter == 0) {
+      if (values$viewCounter %in% c(0, 1)) {
         data <- values$DF
         data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
         data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + values$leftTrophies
@@ -2742,7 +2742,7 @@ output$geomLineM <- function(input, sess) {
     if (is.null(input$opRouteLv5M)) {
       return(NULL)
     } else {# ==2 temporary bug fix
-      if (valuesM$viewCounter == 2 | valuesM$viewCounter == 0) {
+      if (valuesM$viewCounter %in% c(0, 1)) {
         data <- valuesM$DF
         data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
         data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + valuesM$leftTrophies
