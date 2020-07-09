@@ -228,6 +228,7 @@ ui_list[["Desktop"]] <- fluidPage(
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
           fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route."))),
           fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/8/2020")))),
+          fluidRow(column(12, tags$h4(tags$em(tagList('Have any feedback to help us improve the site? Please visit the Google Form at:', tags$a("https://forms.gle/et4joTJgr151Chqk9", href = "https://forms.gle/et4joTJgr151Chqk9")))))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
           fluidRow(column(12, tags$h4('Under the "Deck Comparison" tab, the user will be able to build two decks and compare their trophies predicted by our model. To build Deck 1, the user can either select 8 cards manually or load a deck with their player tag. As for Deck 2, its composition depends on Deck 1. That is, whenever Deck 1 is altered, Deck 2 gets updated automatically. However, directly modifying Deck 2 will not affect Deck 1. Further, all predictions made are for the end of the season.'))),
@@ -353,8 +354,7 @@ ui_list[["Desktop"]] <- fluidPage(
           fluidRow(
             column(7,
                    fluidRow(column(12, rHandsontableOutput(outputId = "opRouteLv5"))),
-                   fluidRow(column(12, tags$h5(textOutput(outputId = "noteRoute")))),
-                   fluidRow(column(12, tags$h5(tags$span(style = "color:DarkBlue", htmlOutput(outputId = "feedback")))))
+                   fluidRow(column(12, tags$h5(textOutput(outputId = "noteRoute"))))
             ),
             column(5,
                    fluidRow(column(12, tags$h4(textOutput(outputId = "plotTitle")))),
@@ -391,7 +391,8 @@ ui_list[["Mobile"]] <- f7Page(
         f7Card(
           title = tags$span(style = "color:firebrick", "Introduction"),
           "The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route.",
-          footer = tags$em("Note: This app was last updated on 7/8/2020")
+          footer = 
+            tags$em("Note: This app was last updated\n on 7/8/2020.", tagList('And if you any feedback to help us improve the site, please visit the Google Form at:', f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)))
         ),
         f7Card(
           title = tags$span(style = "color:firebrick", "Deck Comparison"),
@@ -591,8 +592,7 @@ ui_list[["Mobile"]] <- f7Page(
         ),
         f7Card(
           textOutput(outputId = "plotTitleM"),
-          plotlyOutput(outputId = "geomLineM"),
-          footer = tags$span(style = "color:DarkBlue", htmlOutput(outputId = "feedbackM"))
+          plotlyOutput(outputId = "geomLineM")
         )
         
         
@@ -1151,7 +1151,6 @@ serv_calc[[8]] <- function(input, sess) {
     #})
   })
 }
-
 
 
 
@@ -1873,22 +1872,6 @@ output$noteRoute <- function(input, sess) {
 
 
 
-# feedback message
-output$feedback <- function(input, sess) {
-  renderUI({
-    if (is.null(input$opRouteLv5)) {
-      return (NULL)
-    } else {
-      tagList(
-        'Have any feedback to help us improve the site? Please visit the Google Form at:',
-        tags$a("https://forms.gle/et4joTJgr151Chqk9", href = "https://forms.gle/et4joTJgr151Chqk9")
-      )
-    }
-  })
-}
-
-
-
 # plot title
 output$plotTitle <- function(input, sess) {
   renderText({
@@ -1907,8 +1890,8 @@ output$geomLine <- function(input, sess) {
   renderPlotly({
     if (is.null(input$opRouteLv5)) {
       return(NULL)
-    } else {
-      if (values$viewCounter == 1 | values$viewCounter == 0) {
+    } else {# "2" temporary bug fix
+      if (values$viewCounter == 2 | values$viewCounter == 0) {
         data <- values$DF
         data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
         data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + values$leftTrophies
@@ -2740,22 +2723,6 @@ output$noteRouteM <- function(input, sess) {
 
 
 
-# route note
-output$feedbackM <- function(input, sess) {
-  renderUI({
-    if (is.null(input$opRouteLv5M)) {
-      return (NULL)
-    } else {
-      tagList(
-        'Have any feedback to help us improve the site? Please visit the Google Form at:',
-        f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)
-      )
-    }
-  })
-}
-
-
-
 # plot title
 output$plotTitleM <- function(input, sess) {
   renderText({
@@ -2774,8 +2741,8 @@ output$geomLineM <- function(input, sess) {
   renderPlotly({
     if (is.null(input$opRouteLv5M)) {
       return(NULL)
-    } else {
-      if (valuesM$viewCounter == 1 | valuesM$viewCounter == 0) {
+    } else {# ==2 temporary bug fix
+      if (valuesM$viewCounter == 2 | valuesM$viewCounter == 0) {
         data <- valuesM$DF
         data[, "Cumulative_Gold"] <- cumsum(data$`Gold Required`)
         data[, "Trophies"] <- cumsum(data$`Trophy\nGain`) + valuesM$leftTrophies
