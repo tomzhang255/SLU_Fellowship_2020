@@ -47,7 +47,9 @@ cr_cards_rarity <-
   # season 9: royal delivery
   bind_rows(., tibble(name = "Royal Delivery", rarity = "Common")) %>%
   # season 10: replaces heal with heal spirit
-  mutate(name = str_replace(name, "^Heal$", "Heal Spirit"))
+  mutate(name = str_replace(name, "^Heal$", "Heal Spirit")) %>%
+  # season 12: skeleton dragons
+  bind_rows(., tibble(name = "Skeleton Dragons", rarity = "Common"))
 
 cr_upgrade_cost <- read_csv("cr_upgrade_cost.csv")
 
@@ -227,7 +229,7 @@ ui_list[["Desktop"]] <- fluidPage(
           title = "Info",
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
           fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route."))),
-          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/8/2020")))),
+          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/9/2020")))),
           fluidRow(column(12, tags$h4(tags$em(tagList('Have any feedback to help us improve the site? Please visit the Google Form at:', tags$a("https://forms.gle/et4joTJgr151Chqk9", href = "https://forms.gle/et4joTJgr151Chqk9")))))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
@@ -392,7 +394,7 @@ ui_list[["Mobile"]] <- f7Page(
           title = tags$span(style = "color:firebrick", "Introduction"),
           "The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of two main features: deck comparison and upgrade route.",
           footer = 
-            tags$em("Note: This app was last updated\n on 7/8/2020.", tagList('And if you any feedback to help us improve the site, please visit the Google Form at:', f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)))
+            tags$em("Note: This app was last updated on 7/9/2020.", tagList('And if you have any feedback to help us improve the site, please visit the Google Form at:', f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)))
         ),
         f7Card(
           title = tags$span(style = "color:firebrick", "Deck Comparison"),
