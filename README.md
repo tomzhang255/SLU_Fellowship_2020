@@ -9,4 +9,4 @@ These are the folders within this repository:
 * Modeling_RSciprts_Stage_2: The modeling files in the second stage, exeucted on a High Performance Compute Cluster.
 * Data_Processed_Stage_1: The data processed from Modeling_RSciprts_Stage_1 files.
 * Data_Processed_Stage_2: Data and models returned from Modeling_RSciprts_Stage_2 files. Only a portion of them are here - the rest are extremely large.
-* Shiny: Every version of the Shiny app developed over the course of our research.
+* Shiny: Every version of the Shiny app developed over the course of our research. Shiny_Mod3_Hybrid_V2 is the final version.
