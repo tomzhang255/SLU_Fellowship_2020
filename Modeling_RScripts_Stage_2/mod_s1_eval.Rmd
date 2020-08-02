@@ -1,0 +1,373 @@
+---
+title: "s1 models evaluation"
+output: html_document
+---
+
+## import
+```{r}
+library(tidyverse)
+```
+
+```{r}
+crL <- read_csv("~/research/CR_Project_Tom/data_processed/cr_s1_left.csv")
+# process battle time -> day of the month
+crL <-
+  crL %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+
+mod0 <- readRDS("~/research/CR_Project_Tom/data_processed/mod_0.rds")
+mod4000 <- readRDS("~/research/CR_Project_Tom/data_processed/mod_4000.rds")
+```
+
+
+## right deck
+```{r}
+library(tidyverse)
+
+rarity <- read_csv("~/research/CR_Project_Tom/cr_rarity_level_adjustments.csv")
+
+cr_cards <-
+  jsonlite::fromJSON("~/research/CR_Project_Tom/clash_royale_card_info.json")$cards %>%
+  select(name, rarity) %>%
+  # season 1 added in Fisherman
+  bind_rows(., tibble(name = "Fisherman", rarity = "Legendary"))
+
+# reading in 1,000,000 lines
+cr <- read_csv("~/research/CR_Project_Tom/data_by_season/clash_royale_matches_season_1_2019-07-01_to_2019-08-05_right.csv", n_max = 105593) # 105594
+
+
+
+# fix card/level part
+x <-
+cr %>%  
+  mutate(rightdeck = str_remove_all(rightdeck, "[\\[\"]")) %>%
+  separate_rows(rightdeck, sep = "\\], ") %>%
+  separate(rightdeck, into = c("Cards","Level"), sep = ", ") %>%
+  mutate(Level = parse_number(Level)) %>%
+  left_join(., cr_cards, by = c("Cards" = "name")) %>% # add rarity info
+  left_join(rarity, by = "rarity") %>% # add level adjustment
+  mutate(Level = Level  + level_adjustment) %>% # adjust levels
+  select(-rarity, -level_adjustment, -righttrophychange) %>% # reduce size of dataframe
+  model.matrix(~0 + Cards + Level, data = .) # make indictor variables
+
+
+x = sweep(x[,-ncol(x)], MARGIN = 1, STATS = x[,ncol(x)], FUN = "*")
+
+colnames(x) = str_remove_all(colnames(x), "Cards")
+colnames(x) = str_replace_all(colnames(x), " ", "_")
+colnames(x) = str_replace_all(colnames(x), "-", "_")
+
+# create names for all card and card interaction terms
+interactions = labels(terms(~.^2, data = x[1:10,]))
+
+colnames(x) = paste(colnames(x),"_Level",sep = "")
+
+deck <- 
+  x %>%
+  as_tibble() %>%
+  mutate(tmpid = 1 + 0:(nrow(x)-1) %/% 8) %>%
+  group_by(tmpid) %>%
+  summarize_if(is.numeric, sum) %>%
+  select(-tmpid)
+
+rm(x) # free up memory from x
+
+# put back together
+cr <- cr %>%
+  select(battletime, rightstartingtrophies) %>%
+  bind_cols(sign(deck)) %>%
+  bind_cols(deck)
+
+rm(deck) # free memory from deck
+
+names(cr) = str_remove_all(names(cr), "_Level") # fix anmes
+names(cr) = str_replace_all(names(cr), "1","_Level") # one more fix
+
+crR <- cr
+
+crR <-
+  crR %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+
+
+## <4000 model
+```{r}
+rightPreds <- predict(mod0, crR[1:100000,])
+dfR <- tibble(trophies = crR$rightstartingtrophies[1:100000], preds = rightPreds)
+dfR <-
+  dfR %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "right")
+
+leftPreds <- predict(mod0, crL[1:100000,])
+dfL <- tibble(trophies = crL$leftstartingtrophies[1:100000], preds = leftPreds)
+dfL <-
+  dfL %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "left")
+
+df1 <- bind_rows(dfR, dfL)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point(aes(color = group)) +
+  geom_smooth(aes(linetype = group)) +
+  labs(title = "Residuals vs Trophies (S1) Using Low-Trophies (<4000) S1 Model") +
+  theme_bw()
+```
+
+
+## 4000+ model
+```{r}
+rightPreds <- predict(mod4000, crR[1:100000,])
+dfR <- tibble(trophies = crR$rightstartingtrophies[1:100000], preds = rightPreds)
+dfR <-
+  dfR %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "right")
+
+leftPreds <- predict(mod4000, crL[1:100000,])
+dfL <- tibble(trophies = crL$leftstartingtrophies[1:100000], preds = leftPreds)
+dfL <-
+  dfL %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "left")
+
+df1 <- bind_rows(dfR, dfL)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point(aes(color = group)) +
+  geom_smooth(aes(linetype = group)) +
+  labs(title = "Residuals vs Trophies (S1) Using Arena 13 (4000+ Trophies) S1 Model") +
+  theme_bw()
+
+
+# for final presentation
+dfL %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    x = "Trophies",
+    y = "Residuals",
+    title = "Residuals vs Trophies Using Full Model"
+  ) +
+  theme_bw()
+```
+
+
+
+
+# season 2 datasets
+
+## left deck
+```{r}
+library(tidyverse)
+
+rarity <- read_csv("~/research/CR_Project_Tom/cr_rarity_level_adjustments.csv")
+
+cr_cards <-
+  jsonlite::fromJSON("~/research/CR_Project_Tom/clash_royale_card_info.json")$cards %>%
+  select(name, rarity) %>%
+  # season 1 added in Fisherman
+  bind_rows(., tibble(name = "Fisherman", rarity = "Legendary"))
+
+# reading in 1,000,000 lines
+cr <- read_csv("~/research/CR_Project_Tom/data_by_season/clash_royale_matches_season_2_2019-08-05_to_2019-09-02_left.csv", n_max = 100000)
+
+
+
+# fix card/level part
+x <-
+cr %>%  
+  mutate(leftdeck = str_remove_all(leftdeck, "[\\[\"]")) %>%
+  separate_rows(leftdeck, sep = "\\], ") %>%
+  separate(leftdeck, into = c("Cards","Level"), sep = ", ") %>%
+  mutate(Level = parse_number(Level)) %>%
+  left_join(., cr_cards, by = c("Cards" = "name")) %>% # add rarity info
+  left_join(rarity, by = "rarity") %>% # add level adjustment
+  mutate(Level = Level  + level_adjustment) %>% # adjust levels
+  select(-rarity, -level_adjustment, -lefttrophychange) %>% # reduce size of dataframe
+  model.matrix(~0 + Cards + Level, data = .) # make indictor variables
+
+
+x = sweep(x[,-ncol(x)], MARGIN = 1, STATS = x[,ncol(x)], FUN = "*")
+
+colnames(x) = str_remove_all(colnames(x), "Cards")
+colnames(x) = str_replace_all(colnames(x), " ", "_")
+colnames(x) = str_replace_all(colnames(x), "-", "_")
+
+# create names for all card and card interaction terms
+interactions = labels(terms(~.^2, data = x[1:10,]))
+
+colnames(x) = paste(colnames(x),"_Level",sep = "")
+
+deck <- 
+  x %>%
+  as_tibble() %>%
+  mutate(tmpid = 1 + 0:(nrow(x)-1) %/% 8) %>%
+  group_by(tmpid) %>%
+  summarize_if(is.numeric, sum) %>%
+  select(-tmpid)
+
+rm(x) # free up memory from x
+
+# put back together
+cr <- cr %>%
+  select(battletime, leftstartingtrophies) %>%
+  bind_cols(sign(deck)) %>%
+  bind_cols(deck)
+
+rm(deck) # free memory from deck
+
+names(cr) = str_remove_all(names(cr), "_Level") # fix anmes
+names(cr) = str_replace_all(names(cr), "1","_Level") # one more fix
+
+crL <- cr
+
+crL <-
+  crL %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+## right deck
+```{r}
+library(tidyverse)
+
+rarity <- read_csv("~/research/CR_Project_Tom/cr_rarity_level_adjustments.csv")
+
+cr_cards <-
+  jsonlite::fromJSON("~/research/CR_Project_Tom/clash_royale_card_info.json")$cards %>%
+  select(name, rarity) %>%
+  # season 1 added in Fisherman
+  bind_rows(., tibble(name = "Fisherman", rarity = "Legendary"))
+
+# reading in 1,000,000 lines
+cr <- read_csv("~/research/CR_Project_Tom/data_by_season/clash_royale_matches_season_2_2019-08-05_to_2019-09-02_right.csv", n_max = 100000)
+
+
+
+# fix card/level part
+x <-
+cr %>%  
+  mutate(rightdeck = str_remove_all(rightdeck, "[\\[\"]")) %>%
+  separate_rows(rightdeck, sep = "\\], ") %>%
+  separate(rightdeck, into = c("Cards","Level"), sep = ", ") %>%
+  mutate(Level = parse_number(Level)) %>%
+  left_join(., cr_cards, by = c("Cards" = "name")) %>% # add rarity info
+  left_join(rarity, by = "rarity") %>% # add level adjustment
+  mutate(Level = Level  + level_adjustment) %>% # adjust levels
+  select(-rarity, -level_adjustment, -righttrophychange) %>% # reduce size of dataframe
+  model.matrix(~0 + Cards + Level, data = .) # make indictor variables
+
+
+x = sweep(x[,-ncol(x)], MARGIN = 1, STATS = x[,ncol(x)], FUN = "*")
+
+colnames(x) = str_remove_all(colnames(x), "Cards")
+colnames(x) = str_replace_all(colnames(x), " ", "_")
+colnames(x) = str_replace_all(colnames(x), "-", "_")
+
+# create names for all card and card interaction terms
+interactions = labels(terms(~.^2, data = x[1:10,]))
+
+colnames(x) = paste(colnames(x),"_Level",sep = "")
+
+deck <- 
+  x %>%
+  as_tibble() %>%
+  mutate(tmpid = 1 + 0:(nrow(x)-1) %/% 8) %>%
+  group_by(tmpid) %>%
+  summarize_if(is.numeric, sum) %>%
+  select(-tmpid)
+
+rm(x) # free up memory from x
+
+# put back together
+cr <- cr %>%
+  select(battletime, rightstartingtrophies) %>%
+  bind_cols(sign(deck)) %>%
+  bind_cols(deck)
+
+rm(deck) # free memory from deck
+
+names(cr) = str_remove_all(names(cr), "_Level") # fix anmes
+names(cr) = str_replace_all(names(cr), "1","_Level") # one more fix
+
+crR <- cr
+
+crR <-
+  crR %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+## <4000 model
+```{r}
+rightPreds <- predict(mod0, crR[1:100000,])
+dfR <- tibble(trophies = crR$rightstartingtrophies[1:100000], preds = rightPreds)
+dfR <-
+  dfR %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "right")
+
+leftPreds <- predict(mod0, crL[1:100000,])
+dfL <- tibble(trophies = crL$leftstartingtrophies[1:100000], preds = leftPreds)
+dfL <-
+  dfL %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "left")
+
+df1 <- bind_rows(dfR, dfL)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point(aes(color = group)) +
+  geom_smooth(aes(linetype = group)) +
+  labs(title = "Residuals vs Trophies (S2) Using Low-Trophies (<4000) S1 Model") +
+  theme_bw()
+```
+
+
+## 4000+ model
+```{r}
+rightPreds <- predict(mod4000, crR[1:100000,])
+dfR <- tibble(trophies = crR$rightstartingtrophies[1:100000], preds = rightPreds)
+dfR <-
+  dfR %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "right")
+
+leftPreds <- predict(mod4000, crL[1:100000,])
+dfL <- tibble(trophies = crL$leftstartingtrophies[1:100000], preds = leftPreds)
+dfL <-
+  dfL %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "left")
+
+df1 <- bind_rows(dfR, dfL)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point(aes(color = group)) +
+  geom_smooth(aes(linetype = group)) +
+  labs(title = "Residuals vs Trophies (S2) Using Arena 13 (4000+ Trophies) S1 Model") +
+  theme_bw()
+```
+
+
+
+
+

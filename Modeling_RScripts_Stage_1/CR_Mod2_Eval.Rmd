@@ -1,0 +1,491 @@
+---
+title: "Mod 2 Evaluation"
+author: "Tom Zhang"
+date: "6/8/2020"
+output: html_document
+---
+
+## fitting mod2v2
+## trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
+```{r}
+# import data
+library(tidyverse)
+library(broom)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+
+# cleaning up data
+df_mod2 <-
+  cr_s3_df_ind_left %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214)
+
+# mod_cardInt: trophies ~ cards + all 2-way card interactions
+df_cardInt <-
+  df_mod2 %>%
+    select(1, 3:96)
+
+t1_start <- Sys.time()
+mod_cardInt <- lm(leftstartingtrophies ~ (.)^2, data = df_cardInt) # all 2-way interactions (7 min)
+t1_end <- Sys.time()
+t1_end - t1_start
+
+# mod2v2
+f2 <- as.formula(
+  paste(
+    "leftstartingtrophies ~",
+    paste(
+      c(
+        paste('`', names(df_mod2)[2:190], '`', sep = ''), # day + cards + levels
+        paste('I(`', names(df_mod2)[97:190], '`^2)', sep = ''), # quadratic levels
+        names(coef(mod_cardInt))[-1:-95] # all 2-way card interactions
+        ),
+      collapse = " + "
+      )
+    )
+  )
+
+t2_start <- Sys.time()
+mod2v2 <- lm(formula = f2, data = df_mod2) # 7 min
+t2_end <- Sys.time()
+t2_end - t2_start
+
+
+#summary(mod2v2)
+tidy(mod2v2)
+glance(mod2v2)
+```
+
+
+## Import/process right deck
+```{r}
+cr_s3_df_ind_right <- read_csv("data/cr_s3_df_ind_right.csv")
+
+df_mod2_right <-
+  cr_s3_df_ind_right %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(rightstartingtrophies, dayOfTheMonth, 27:214)
+```
+
+
+# Predicting right deck trophies using mod2v2 (i.e., created from left deck)
+```{r}
+t3_start <- Sys.time()
+
+df_mod2v2_aug <-
+  df_mod2_right %>%
+    augment(mod2v2, data = .) %>%
+    select(1, 191:196)
+
+t3_end <- Sys.time() # about 56 min
+t3_end - t3_start
+
+df_mod2v2_aug # comparing observed and fitted for right deck
+```
+
+
+## save prediction df
+```{r}
+write_csv(df_mod2v2_aug, "data/df_mod2v2_aug.csv")
+```
+
+
+
+
+
+
+
+
+# Using biglm for mod2v2 - Use this for predictions
+
+## fitting mod2v2_biglm
+## trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
+```{r}
+# import data
+library(tidyverse)
+library(broom)
+library(biglm)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+
+# cleaning up data
+df_mod2 <-
+  cr_s3_df_ind_left %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214, -Zappies)
+
+# mod_cardInt: trophies ~ cards + all 2-way card interactions
+df_cardInt <-
+  df_mod2 %>%
+    select(1, 3:95)
+
+fInt <- as.formula(
+  paste(
+    "leftstartingtrophies ~ (",
+    paste(
+      paste("`", names(df_cardInt)[-1], "`", sep = ""),
+      collapse = " + "
+    ),
+    ")^2"
+  )
+)
+
+t1_start <- Sys.time()
+mod_cardInt_biglm <- biglm::biglm(formula = fInt, data = df_cardInt)
+t1_end <- Sys.time()
+t1_end - t1_start # 4 min
+
+# mod2v2
+f2_biglm <- as.formula(
+  paste(
+    "leftstartingtrophies ~",
+    paste(
+      c(
+        paste('`', names(df_mod2)[2:189], '`', sep = ''), # day + cards + levels
+        paste('I(`', names(df_mod2)[96:189], '`^2)', sep = ''), # quadratic levels
+        mod_cardInt_biglm$names[-1:-94] # all 2-way card interactions
+        ),
+      collapse = " + "
+      )
+    )
+  )
+
+t2_start <- Sys.time()
+mod2v2_biglm <- biglm::biglm(formula = f2_biglm, data = df_mod2)
+t2_end <- Sys.time()
+t2_end - t2_start # 4 min
+
+#summary(mod2v2_biglm)
+tidy(mod2v2_biglm)
+```
+
+
+## fitting mod2v2_biglm by blocks of data
+## build X matrix for mod2v2_biglm
+## trophies ~ day + card indicators + card numeric level + (card numeric level)^2 + card interactions
+```{r}
+library(tidyverse)
+library(broom)
+library(biglm)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+
+# cleaning up data
+df_mod2 <-
+  cr_s3_df_ind_left %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214)
+
+# card numeric level squared
+lvl <-
+  df_mod2 %>%
+    select(97:190)
+
+lvl_Sq <-
+  lvl^2
+
+names(lvl_Sq) <- paste(names(lvl_Sq), "Sq")
+
+# card interactions
+cards <-
+  df_mod2 %>%
+    select(3:96)
+
+cardsIntMTX <- model.matrix(~(.)^2,cards)
+cardsIntMTX <- cardsIntMTX[,96:4466]
+
+# combine to create matrix X
+X <- cbind(data.matrix(df_mod2[,-1]), data.matrix(lvl_Sq), cardsIntMTX)
+
+# extract Y the response
+Y <- data.matrix(df_mod2[,1])
+
+
+
+# number of chunks to divide the data into
+nChunks <- 10
+n <- nrow(df_mod2)
+chunkLength <- n / nChunks
+
+# First fit
+t_start <- Sys.time()
+# using the ith chunk when i = 1
+Yi <- matrix(Y[1:chunkLength,])
+colnames(Yi) <- "leftstartingtrophies"
+Xi <- X[1:chunkLength,]
+
+mod2v2_biglm <- biglm::biglm(Yi ~ Xi, data = data.frame(Yi, Xi))
+
+# Update fit
+pb <- txtProgressBar(style = 3)
+
+for (i in 2:nChunks) {
+  # reading the i-th chunk of data
+  Yi <- matrix(Y[(nrow(Yi) + 1):(nrow(Yi) + chunkLength),])
+  colnames(Yi) <- "leftstartingtrophies"
+  Xi <- X[(nrow(Yi) + 1):(nrow(Yi) + chunkLength),]
+
+  # Update the fit
+  mod2v2_biglm <- update(mod2v2_biglm, moredata = data.frame(Yi, Xi))
+
+  # Progress
+  setTxtProgressBar(pb = pb, value = i / nChunks)
+}
+
+t_end <- Sys.time()
+t_end - t_start
+
+# Final model
+summary(mod2v2_biglm)
+```
+
+
+## no blocks - fit all at once
+```{r}
+library(tidyverse)
+library(broom)
+library(biglm)
+cr_s3_df_ind_left <- read_csv("data/cr_s3_df_ind_left.csv")
+
+# cleaning up data
+df_mod2 <-
+  cr_s3_df_ind_left %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214)
+
+# card numeric level squared
+lvl <-
+  df_mod2 %>%
+    select(97:190)
+
+lvl_Sq <-
+  lvl^2
+
+names(lvl_Sq) <- paste(names(lvl_Sq), "Sq")
+
+# card interactions
+cards <-
+  df_mod2 %>%
+    select(3:96)
+
+cardsIntMTX <- model.matrix(~(.)^2,cards)
+cardsIntMTX <- cardsIntMTX[,96:4466]
+
+# combine to create matrix X
+X <- cbind(data.matrix(df_mod2[,-1]), data.matrix(lvl_Sq), cardsIntMTX)
+
+# extract Y the response
+Y <- data.matrix(df_mod2[,1])
+
+# fit
+t_start <- Sys.time()
+mod2v2_biglm <- biglm::biglm(Y ~ X, data = data.frame(Y, X))
+t_end <- Sys.time()
+t_end - t_start
+
+tidy(mod2v2_biglm)
+```
+
+
+
+
+
+
+
+
+
+
+## Import/process right deck
+```{r}
+cr_s3_df_ind_right <- read_csv("data/cr_s3_df_ind_right.csv")
+
+df_mod2_right <-
+  cr_s3_df_ind_right %>%
+    mutate(battletime = as.character(as.POSIXct(battletime, origin="2019-09-02", tz="GMT"))) %>%
+    mutate(battletime = str_remove(battletime, "\\s.*")) %>%
+    separate(battletime, into = c("yearMonth", "dayOfTheMonth"), sep = -2) %>%
+    mutate(dayOfTheMonth = as.numeric(dayOfTheMonth)) %>%
+    mutate(leftstartingtrophies = rightstartingtrophies) %>%
+    select(leftstartingtrophies, dayOfTheMonth, 27:214, -Zappies)
+```
+
+
+## Predicting right deck trophies using mod2v2_biglm (i.e., created from left deck)
+```{r}
+t3_start <- Sys.time()
+
+
+predict(mod2v2_biglm, newdata = df_mod2[1,])
+
+
+t3_end <- Sys.time() # about 56 min
+t3_end - t3_start
+```
+
+
+
+
+
+
+## evaluation: predicted R^2
+```{r}
+df_mod2v2_aug <- read_csv("data/df_mod2v2_aug.csv")
+```
+
+```{r}
+# predictive R-squared = [1 - (PRESS / sums of squares total)] * 100
+# predicted residual sums of squares (PRESS)
+PRESS <- sum(df_mod2v2_aug$.resid)^2
+
+# slunova
+slunova=function(model){
+  numpred=model$rank-1
+  dferror=df.residual(model)
+  dfmodel=numpred
+  dftotal=dfmodel+dferror
+  sse=sum(model$residual^2)
+  ssmodel=sum(model$effects[2:(numpred+1)]^2)
+  sstotal=ssmodel+sse
+  msmodel=ssmodel/dfmodel
+  mse=sse/dferror
+  fstat=msmodel/mse
+  pvalue=1-pf(fstat,dfmodel,dferror)
+  df=c(dfmodel,dferror,dftotal)
+  ss=c(ssmodel,sse,sstotal)
+  ms=c(msmodel,mse,0)
+  f=c(fstat,0,0)
+  p=c(pvalue,0,0)
+  table=data.frame(df,ss,ms,f,p)
+  table[2,4:5]=NA
+  table[3,3:5]=NA
+
+colnames(table)=c("Df","Sum Sq","Mean Sq","F value","P(>F)")
+  row.names(table)=c("Model","Error","Total")
+  class(table)=c("anova","data.frame")
+  structure(table,
+            heading=c("ANOVA Table",                            paste("Model:", formula(model)[2],formula(model)[1],formula(model)[3],"\n")))
+}
+
+slunova(mod2v2)
+
+SSTotal <- 19999
+
+# predicted R^2
+predRSq <- 1 - (PRESS / SSTotal)
+predRSq
+```
+
+```{r}
+glance(mod2v2)
+```
+
+## plot of residual vs y
+```{r}
+df_mod2v2_aug %>%
+  ggplot(., aes(y = .resid, x = rightstartingtrophies)) +
+  geom_point() +
+  geom_smooth()
+```
+
+
+# Predicting left deck trophies using mod2v2 (i.e., created from left deck)
+```{r}
+t3_start <- Sys.time()
+
+df_mod2v2_aug_left <-
+  df_mod2 %>%
+    augment(mod2v2, data = .) %>%
+    select(1, 191:196)
+
+t3_end <- Sys.time() # about 56 min
+t3_end - t3_start
+
+df_mod2v2_aug_left # comparing observed and fitted for right deck
+```
+
+
+## save prediction df
+```{r}
+write_csv(df_mod2v2_aug_left, "data/df_mod2v2_aug_left.csv")
+```
+
+
+## compare left and right deck
+```{r}
+df1 <-
+  df_mod2v2_aug_left %>%
+  select(1,4) %>%
+  mutate(group = "left")
+names(df1)[1] <- "trophies"
+
+df2 <-
+  df_mod2v2_aug %>%
+  select(1,4) %>%
+  mutate(group = "right")
+names(df2)[1] <- "trophies"
+
+df3 <- bind_rows(df1, df2)
+
+df3 %>%
+  ggplot(., aes(x = trophies, y = .resid, color = group)) +
+  geom_point() +
+  geom_smooth()
+```
+
+
+
+
+
+
+
+## testing predict() for biglm
+## whether a random response column will work
+```{r}
+library(tidyverse)
+library(biglm)
+iris
+
+modTest <- biglm(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + Species, data = iris)
+summary(modTest)
+
+df_test <-
+  iris %>%
+    slice(1:5)
+
+predict(modTest, newdata = df_test)
+
+df_test2 <-
+  iris %>%
+    slice(1:5) %>%
+    mutate(Sepal.Length = 10000000000)
+
+predict(modTest, newdata = df_test2) # random values for the response column works
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

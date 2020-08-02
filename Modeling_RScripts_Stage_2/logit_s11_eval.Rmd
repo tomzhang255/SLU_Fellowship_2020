@@ -1,0 +1,376 @@
+---
+title: "logit s11 winsor 42-63 eval"
+output: html_document
+---
+
+## import mod1 and df1 - winsorized
+```{r}
+library(tidyverse)
+library(quantreg)
+logit_4360 <- readRDS("~/research/CR_Project_Tom/data_processed/logit_s11_winsor_43_60.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/logit_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6000+ = 6000
+cr <- 
+  cr %>%
+    mutate(startingtrophies = if_else(startingtrophies > 6000, 6000, startingtrophies))
+
+cr <-
+  cr %>%
+    filter(startingtrophies >= 4000) %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+
+
+## predict trophies using win rate = 0.3
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_4360$coefficients
+coefs[3] <- -0.3
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_4360$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.3)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## predict trophies using win rate = 0.4
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_4360$coefficients
+coefs[3] <- -0.4
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_4360$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.4)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## predict trophies using win rate = 0.5
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_4360$coefficients
+coefs[3] <- -0.5
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_4360$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.5)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## predict trophies using win rate = 0.6
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_4360$coefficients
+coefs[3] <- -0.6
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_4360$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.6)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## predict trophies using win rate = 0.7
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_4360$coefficients
+coefs[3] <- -0.7
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_4360$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.7)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+# start over for mod2 df2 - no winsor
+
+## import mod2 and df2
+```{r}
+library(tidyverse)
+library(quantreg)
+logit_noWinsor <- readRDS("~/research/CR_Project_Tom/data_processed/logit_s11_noWinsor.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/logit_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6000+ = 6000
+# cr <- 
+#   cr %>%
+#     mutate(startingtrophies = if_else(startingtrophies > 6000, 6000, startingtrophies))
+
+cr <-
+  cr %>%
+    filter(startingtrophies >= 4000) %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+
+
+## predict trophies using win rate = 0.5
+```{r}
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_noWinsor$coefficients
+coefs[3] <- -0.5
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_noWinsor$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: No Winsor S11 CombinedLastActive Logit",
+    subtitle = "win/lose ~ day + trophies + cards + levels (solve for trophies when win rate = 0.5)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+# start over for mod3 df3 - add in card interactions and quadratic levels
+
+## import mod3 and df3
+```{r}
+library(tidyverse)
+logit_intQuad <- readRDS("~/research/CR_Project_Tom/data_processed/logit_s11_winsor_43_60_int_quad.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/logit_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6000+ = 6000
+cr <-
+  cr %>%
+    mutate(startingtrophies = if_else(startingtrophies > 6000, 6000, startingtrophies))
+
+cr <-
+  cr %>%
+    filter(startingtrophies >= 4000) %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+
+
+
+## predict trophies using win rate = 0.5
+```{r}
+lvl <- cr[,102:199]
+
+lvlSq <- lvl^2
+
+cards <- cr[,4:101]
+
+cardInt <- model.matrix(~ .^2, data = cards)[,-1:-99]
+
+df <-
+cr %>%
+  mutate(forInt = 1, forWinrate = 1, battletime = 30) %>%
+  select(forInt, battletime, forWinrate, 4:199)
+
+df <- bind_cols(df, lvlSq, as.data.frame(cardInt))
+
+dfMat <- data.matrix(df)
+dfMat <- t(dfMat)
+
+coefs <- logit_intQuad$coefficients
+coefs[3] <- -0.5
+names(coefs) <- NULL
+
+predMat <- coefs * dfMat
+preds <- colSums(predMat, na.rm = T) * (-1 / logit_intQuad$coefficients[[3]])
+```
+
+## resid vs y plot
+```{r}
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActive Logit",
+    subtitle = "win ~ day + trophies + cards + lvl + lvl^2 + card interactions (solve for trophies when win rate = 0.5)"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+

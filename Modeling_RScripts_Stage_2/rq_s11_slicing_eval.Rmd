@@ -1,0 +1,179 @@
+---
+title: "rq s11 winsor 42-63 eval"
+output: html_document
+---
+
+## import mod and df
+```{r}
+library(tidyverse)
+library(quantreg)
+slice1 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_slice_1.rds")
+slice2 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_slice_2.rds")
+slice3 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_slice_3.rds")
+slice4 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_slice_4.rds")
+
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/quantmod_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+```
+
+## filtering and conversion
+```{r}
+# filter 2000-4000
+# and convert battletime -> day of the month
+cr1 <-
+  cr %>%
+  filter(startingtrophies >= 2000 & startingtrophies < 4000) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+
+
+
+# filter 4000-4500
+# and convert battletime -> day of the month
+cr2 <-
+  cr %>%
+  filter(startingtrophies >= 4000 & startingtrophies < 4500) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+
+
+
+# filter 4500-5500
+# and convert battletime -> day of the month
+cr3 <-
+  cr %>%
+  filter(startingtrophies >= 4500 & startingtrophies < 5500) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+
+
+
+# filter 5500+ no winsorizing
+# and convert battletime -> day of the month
+cr4 <-
+  cr %>%
+  filter(startingtrophies >= 5500) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+```
+
+
+
+
+## prediction matrices
+```{r}
+predsMat1 <- predict.rq(slice1, cr1)
+predsMat2 <- predict.rq(slice2, cr2)
+predsMat3 <- predict.rq(slice3, cr3)
+predsMat4 <- predict.rq(slice4, cr4)
+```
+
+
+
+
+## resid vs y plot - slice 1: 2000-4000 - tau = 0.75
+```{r}
+preds <- predsMat1[,3] # tau = 0.75
+df1 <- tibble(trophies = cr1$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 2000-4000 S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## resid vs y plot - slice 2: 4000-4500 - tau = 0.75
+```{r}
+preds <- predsMat2[,3] # tau = 0.75
+df1 <- tibble(trophies = cr2$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4000-4500 S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## resid vs y plot - slice 3: 4500-5500 - tau = 0.75
+```{r}
+preds <- predsMat3[,3] # tau = 0.75
+df1 <- tibble(trophies = cr3$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4500-5500 S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## resid vs y plot - slice 4: 5500+ - tau = 0.75
+```{r}
+preds <- predsMat4[,3] # tau = 0.75
+df1 <- tibble(trophies = cr4$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 5500+ S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

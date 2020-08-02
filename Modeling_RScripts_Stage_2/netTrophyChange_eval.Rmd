@@ -1,0 +1,68 @@
+---
+title: "net trophy change eval"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+net <- read_csv("~/research/CR_Project_Tom/data_processed/netTrophyChange_data.csv")
+net2 <- read_csv("~/research/CR_Project_Tom/data_processed/netTrophyChange_data_2.csv")
+net3 <- read_csv("~/research/CR_Project_Tom/data_processed/netTrophyChange_data_3.csv")
+```
+
+
+```{r}
+net %>%
+  ggplot(., aes(x = leftstartingtrophies, y = nettrophychange)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw() +
+  labs(
+    title = "Scatterplot of Net Trophy Change vs Left Starting Trophies",
+    subtitle = "Based on Last Win - Left Active Players S11 Data"
+  )
+```
+
+
+
+
+```{r}
+net2 %>%
+  ggplot(., aes(x = leftstartingtrophies, y = nettrophychange)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw() +
+  labs(
+    title = "Scatterplot of Net Trophy Change vs Left Starting Trophies",
+    subtitle = "Based on All Wins - Left Active Players S11 Data"
+  )
+```
+
+
+
+
+
+
+
+```{r}
+net3 %>%
+  ggplot(., aes(x = leftstartingtrophies, y = nettrophychange)) +
+  geom_point() +
+  geom_smooth() +
+  theme_bw() +
+  labs(
+    title = "Scatterplot of Net Trophy Change vs Left Starting Trophies",
+    subtitle = "Based on All Matches (Wins & Losses) - Left Active Players S11 Data"
+  )
+```
+
+
+
+
+
+
+
+
+
+
+

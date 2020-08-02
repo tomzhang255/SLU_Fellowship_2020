@@ -1,0 +1,290 @@
+---
+title: "s11 eval"
+output: html_document
+---
+
+## import quantmod df
+```{r}
+library(tidyverse)
+library(quantreg)
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/quantmod_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+```
+
+
+## filtering and conversion
+```{r}
+cr <-
+  cr %>%
+  filter(startingtrophies >= 4001 & startingtrophies < 6600) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+```
+
+
+## mods
+```{r}
+rq25 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rq_25.RDS")
+rq50 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rq_50.RDS")
+rq75 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rq_75.RDS")
+rq95 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rq_95.RDS")
+
+rqss25 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rqss_25.RDS")
+rqss50 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rqss_50.RDS")
+rqss75 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rqss_75.RDS")
+rqss95 <- readRDS("~/research/CR_Project_Tom/data_processed/quantmod_s11_rqss_95.RDS")
+```
+
+
+
+
+## rq25 resid vs y plot
+```{r}
+preds <- predict(rq25, cr[,-2])
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rq 0.25",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq50 resid vs y plot
+```{r}
+preds <- predict(rq50, cr[,-2])
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rq 0.50",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq75 resid vs y plot
+```{r}
+preds <- predict(rq75, cr[,-2])
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq95 resid vs y plot
+```{r}
+preds <- predict(rq95, cr[,-2])
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rq 0.95",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+## rqss manual predictions experiment
+```{r}
+newx <- 
+  cr %>%
+    mutate(intercept = 1) %>%
+    select(intercept, battletime, 101:199)
+
+# now each column is an observation, containing intercept (1) and all predictor values
+newx <- t(data.matrix(newx))
+
+coefs <- rqss25$coef
+
+colSums(newx[,1:3] * c(1:100))
+# colSums(newx * coefs) to get vector of predictions
+```
+
+
+## rqss25 resid vs y plot
+```{r}
+newx <- 
+  cr %>%
+    mutate(intercept = 1) %>%
+    select(intercept, battletime, 101:199)
+
+# now each column in newx is an observation, containing intercept (1) and all predictor values
+newx <- t(data.matrix(newx))
+coefs <- rqss25$coef
+preds <- colSums(newx * coefs)
+
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rqss 0.25",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rqss50 resid vs y plot
+```{r}
+newx <- 
+  cr %>%
+    mutate(intercept = 1) %>%
+    select(intercept, battletime, 101:199)
+
+# now each column in newx is an observation, containing intercept (1) and all predictor values
+newx <- t(data.matrix(newx))
+coefs <- rqss50$coef
+preds <- colSums(newx * coefs)
+
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rqss 0.50",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rqss75 resid vs y plot
+```{r}
+newx <- 
+  cr %>%
+    mutate(intercept = 1) %>%
+    select(intercept, battletime, 101:199)
+
+# now each column in newx is an observation, containing intercept (1) and all predictor values
+newx <- t(data.matrix(newx))
+coefs <- rqss75$coef
+preds <- colSums(newx * coefs)
+
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rqss 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rqss95 resid vs y plot
+```{r}
+newx <- 
+  cr %>%
+    mutate(intercept = 1) %>%
+    select(intercept, battletime, 101:199)
+
+# now each column in newx is an observation, containing intercept (1) and all predictor values
+newx <- t(data.matrix(newx))
+coefs <- rqss95$coef
+preds <- colSums(newx * coefs)
+
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4001-6600 S11 CombinedLastActiveWin rqss 0.95",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

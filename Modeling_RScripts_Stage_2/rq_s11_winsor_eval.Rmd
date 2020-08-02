@@ -1,0 +1,428 @@
+---
+title: "rq s11 winsor 42-63 eval"
+output: html_document
+---
+
+## import mod and df
+```{r}
+library(tidyverse)
+library(quantreg)
+winsor_4263 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_winsor_42_63.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/quantmod_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6300+
+cr <- 
+  cr %>%
+    mutate(startingtrophies = if_else(startingtrophies > 6300, 6300, startingtrophies))
+```
+
+## filtering and conversion
+```{r}
+cr <-
+  cr %>%
+  filter(startingtrophies >= 4200 & startingtrophies < 6300) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+```
+
+## prediction matrix
+```{r}
+predsMat <- predict.rq(winsor_4263, cr)
+```
+
+
+
+
+## rq25 resid vs y plot
+```{r}
+preds <- predsMat[,1] # tau = 0.25
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4200-6300 Winsor S11 CombinedLastActiveWin rq 0.25",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq50 resid vs y plot
+```{r}
+preds <- predsMat[,2] # tau = 0.50
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4200-6300 Winsor S11 CombinedLastActiveWin rq 0.50",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq75 resid vs y plot
+```{r}
+preds <- predsMat[,3] # tau = 0.75
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4200-6300 Winsor S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## rq95 resid vs y plot
+```{r}
+preds <- predsMat[,4] # tau = 0.95
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4200-6300 Winsor S11 CombinedLastActiveWin rq 0.95",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+
+# start over from line 1 for second winsor model
+
+## import mod2 and df2
+```{r}
+library(tidyverse)
+library(quantreg)
+winsor_4360 <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_winsor_43_60.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/quantmod_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6000+ = 6000
+cr <- 
+  cr %>%
+    mutate(startingtrophies = if_else(startingtrophies > 6000, 6000, startingtrophies))
+
+cr <-
+  cr %>%
+    filter(startingtrophies >= 4000) %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+## prediction matrix
+```{r}
+predsMat2 <- predict.rq(winsor_4360, cr)
+```
+
+
+
+
+## winsor 2 - rq25 resid vs y plot
+```{r}
+preds <- predsMat2[,1] # tau = 0.25
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.25",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 2 - rq50 resid vs y plot
+```{r}
+preds <- predsMat2[,2] # tau = 0.50
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.50",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 2 - rq75 resid vs y plot
+```{r}
+preds <- predsMat2[,3] # tau = 0.75
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 2 - rq95 resid vs y plot
+```{r}
+preds <- predsMat2[,4] # tau = 0.95
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.95",
+    subtitle = "trophies ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# start over for third winsor log model
+
+## import mod3 and df3
+```{r}
+library(tidyverse)
+library(quantreg)
+winsor_4360_log <- readRDS("~/research/CR_Project_Tom/data_processed/rq_s11_winsor_43_60_log.rds")
+
+cr <- read_csv("~/research/CR_Project_Tom/data_processed/quantmod_s11_data.csv")
+# need filtering 4000+ and battletime conversion
+
+# winsorize 6000+ = 6000
+cr <- 
+  cr %>%
+    mutate(startingtrophies = if_else(startingtrophies > 6000, 6000, startingtrophies))
+
+cr <-
+  cr %>%
+    filter(startingtrophies >= 4000) %>%
+    mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+    mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+    mutate(battletime = as.numeric(battletime))
+```
+
+## prediction matrix
+```{r}
+predsMat3 <- exp(predict.rq(winsor_4360_log, cr))
+```
+
+
+
+
+## winsor 3 - rq05 resid vs y plot
+```{r}
+preds <- predsMat3[,1] # tau = 0.05
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.05",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 3 - rq10 resid vs y plot
+```{r}
+preds <- predsMat3[,2] # tau = 0.10
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.10",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 3 - rq25 resid vs y plot
+```{r}
+preds <- predsMat3[,3] # tau = 0.25
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.25",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 3 - rq50 resid vs y plot
+```{r}
+preds <- predsMat3[,4] # tau = 0.50
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.50",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 3 - rq75 resid vs y plot
+```{r}
+preds <- predsMat3[,5] # tau = 0.75
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.75",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+## winsor 3 - rq95 resid vs y plot
+```{r}
+preds <- predsMat3[,6] # tau = 0.95
+df1 <- tibble(trophies = cr$startingtrophies, preds = preds)
+df1 <-
+  df1 %>%
+  mutate(resid = trophies - preds)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Residual vs Trophy: 4300-6000 Winsor S11 CombinedLastActiveWin rq 0.95",
+    subtitle = "log(trophies) ~ dayOfTheMonth + levels"
+    ) +
+  theme_bw()
+```
+
+
+
+
+

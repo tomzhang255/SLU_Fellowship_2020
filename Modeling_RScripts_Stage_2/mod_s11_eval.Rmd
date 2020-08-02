@@ -1,0 +1,322 @@
+---
+title: "s11 eval"
+output: html_document
+---
+
+# import
+
+## import model
+```{r}
+library(tidyverse)
+library(automl)
+mod4000s11lm <- readRDS("~/research/CR_Project_Tom/data_processed/mod_4000_s11_lm.rds")
+```
+
+
+## universal import
+```{r}
+rarity <- read_csv("~/research/CR_Project_Tom/cr_rarity_level_adjustments.csv")
+
+cr_cards <-
+  jsonlite::fromJSON("~/research/CR_Project_Tom/clash_royale_card_info.json")$cards %>%
+  select(name, rarity) %>%
+  # season 1 added in Fisherman - nothing more up to season 3
+  bind_rows(., tibble(name = "Fisherman", rarity = "Legendary")) %>%
+  # season 4: elixir golem
+  bind_rows(., tibble(name = "Elixir Golem", rarity = "Rare")) %>%
+  # season 6: battle healer
+  bind_rows(., tibble(name = "Battle Healer", rarity = "Rare")) %>%
+  # season 7: firecracker
+  bind_rows(., tibble(name = "Firecracker", rarity = "Common")) %>%
+  # season 9: royal delivery
+  bind_rows(., tibble(name = "Royal Delivery", rarity = "Common")) %>%
+  # season 10: replaces heal with heal spirit
+  mutate(name = str_replace(name, "^Heal$", "Heal Spirit"))
+
+# reading in all lines
+cr_full <- read_csv("~/research/CR_Project_Tom/data_by_season/clash_royale_matches_season_11_2020-05-04_to_2020-06-01.csv")
+
+
+# filter only the active players based on lefttag
+cr_sub <-
+  cr_full %>%
+    group_by(lefttag) %>%
+    filter(n() >= 25) %>%
+    ungroup()
+```
+
+
+## import left deck s11
+```{r}
+# keep left deck vars
+cr_left <-
+  cr_sub %>%
+  select(id, battletime, leftstartingtrophies, lefttrophychange, leftdeck)
+
+
+set.seed(3007)
+cr <- cr_left %>%
+  filter(battletime > '2020-05-29') %>% # only look at the last few days in the season
+  #sample_n(tbl = ., size = 20000) %>% # random sample of 20k
+  filter(str_count(leftdeck, pattern = ",") == 15) # ensures 8 card decks
+
+
+
+
+# fix card/level part
+xcards <-
+cr %>%  
+  separate_rows(leftdeck, sep = "\\],") %>%
+  separate(leftdeck, into = c("Cards","Level"), sep = ", ") %>%
+  mutate(Level = parse_number(Level),
+         Cards = str_remove_all(Cards, "\\[+"),
+         Cards = str_remove_all(Cards, '\\"'),
+         Cards = str_trim(Cards, side = c("both"))
+         ) %>%
+  left_join(., cr_cards, by = c("Cards" = "name")) %>% # add rarity info
+  left_join(rarity, by = "rarity") %>% # add level adjustment
+  mutate(Level = Level  + level_adjustment) %>% # adjust levels
+  select(-rarity, -level_adjustment, -lefttrophychange) # reduce size of dataframe
+
+x = model.matrix(~0 + Cards + Level, model.frame(~ ., xcards, na.action=na.pass)) # make indictor variables
+
+#x = xcards %>%  model.matrix(~0 + Cards + Level, data = .) 
+
+x = sweep(x[,-ncol(x)], MARGIN = 1, STATS = x[,ncol(x)], FUN = "*")
+
+colnames(x) = str_remove_all(colnames(x), "Cards")
+colnames(x) = str_replace_all(colnames(x), " ", "_")
+colnames(x) = str_replace_all(colnames(x), "-", "_")
+
+# create names for all card and card interaction terms
+interactions = labels(terms(~.^2, data = x[1:10,]))
+
+colnames(x) = paste(colnames(x),"_Level",sep = "")
+
+deck <- 
+  x %>%
+  as_tibble() %>%
+  mutate(tmpid = xcards$id) %>%
+  group_by(tmpid) %>%
+  summarize_if(is.numeric, sum)
+
+rm(x) # free up memory
+rm(xcards)
+
+# put back together
+cr <- cr %>%
+  select(battletime, leftstartingtrophies) %>%
+  bind_cols(sign(deck[,-1])) %>%
+  bind_cols(deck[,-1])
+
+rm(deck) # free memory from deck
+
+names(cr) = str_remove_all(names(cr), "_Level") # fix anmes
+names(cr) = str_replace_all(names(cr), "1","_Level") # one more fix
+
+
+
+# filter 4000+ and convert battletime -> day of the month
+crL <-
+  cr %>%
+  filter(leftstartingtrophies >= 4000) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+```
+
+
+## import right deck s11
+```{r}
+# keep left deck vars
+cr_right <-
+  cr_sub %>%
+  select(id, battletime, rightstartingtrophies, righttrophychange, rightdeck)
+
+
+set.seed(3007)
+cr <- cr_right %>%
+  filter(battletime > '2020-05-29') %>% # only look at the last few days in the season
+  #sample_n(tbl = ., size = 20000) %>% # random sample of 20k
+  filter(str_count(rightdeck, pattern = ",") == 15) # ensures 8 card decks
+
+
+
+
+# fix card/level part
+xcards <-
+cr %>%  
+  separate_rows(rightdeck, sep = "\\],") %>%
+  separate(rightdeck, into = c("Cards","Level"), sep = ", ") %>%
+  mutate(Level = parse_number(Level),
+         Cards = str_remove_all(Cards, "\\[+"),
+         Cards = str_remove_all(Cards, '\\"'),
+         Cards = str_trim(Cards, side = c("both"))
+         ) %>%
+  left_join(., cr_cards, by = c("Cards" = "name")) %>% # add rarity info
+  left_join(rarity, by = "rarity") %>% # add level adjustment
+  mutate(Level = Level  + level_adjustment) %>% # adjust levels
+  select(-rarity, -level_adjustment, -righttrophychange) # reduce size of dataframe
+
+x = model.matrix(~0 + Cards + Level, model.frame(~ ., xcards, na.action=na.pass)) # make indictor variables
+
+#x = xcards %>%  model.matrix(~0 + Cards + Level, data = .) 
+
+x = sweep(x[,-ncol(x)], MARGIN = 1, STATS = x[,ncol(x)], FUN = "*")
+
+colnames(x) = str_remove_all(colnames(x), "Cards")
+colnames(x) = str_replace_all(colnames(x), " ", "_")
+colnames(x) = str_replace_all(colnames(x), "-", "_")
+
+# create names for all card and card interaction terms
+interactions = labels(terms(~.^2, data = x[1:10,]))
+
+colnames(x) = paste(colnames(x),"_Level",sep = "")
+
+deck <- 
+  x %>%
+  as_tibble() %>%
+  mutate(tmpid = xcards$id) %>%
+  group_by(tmpid) %>%
+  summarize_if(is.numeric, sum)
+
+rm(x) # free up memory
+rm(xcards)
+
+# put back together
+cr <- cr %>%
+  select(battletime, rightstartingtrophies) %>%
+  bind_cols(sign(deck[,-1])) %>%
+  bind_cols(deck[,-1])
+
+rm(deck) # free memory from deck
+
+names(cr) = str_remove_all(names(cr), "_Level") # fix anmes
+names(cr) = str_replace_all(names(cr), "1","_Level") # one more fix
+
+
+
+# filter 4000+ and convert battletime -> day of the month
+crR <-
+  cr %>%
+  filter(rightstartingtrophies >= 4000) %>%
+  mutate(battletime = str_remove(battletime, "\\s.+")) %>%
+  mutate(battletime = str_remove(battletime, "[:digit:]{4}-[:digit:]{2}-")) %>%
+  mutate(battletime = as.numeric(battletime))
+```
+
+
+# predict season 11
+
+## mod 4000+ active full s11
+```{r}
+# trophies ~ dayOfTheMonth + cards + levels + levels^2 + card interactions + day interact with lvl and lvl^2
+
+rightPreds <- predict(mod4000s11lm, crR[,-2])
+dfR <- tibble(trophies = crR$rightstartingtrophies, preds = rightPreds)
+dfR <-
+  dfR %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "right")
+
+leftPreds <- predict(mod4000s11lm, crL[,-2])
+dfL <- tibble(trophies = crL$leftstartingtrophies, preds = leftPreds)
+dfL <-
+  dfL %>%
+  mutate(resid = trophies - preds) %>%
+  mutate(group = "left")
+
+df1 <- bind_rows(dfR, dfL)
+
+df1 %>%
+  ggplot(., aes(x = trophies, y = resid)) +
+  geom_point(aes(color = group)) +
+  geom_smooth(aes(linetype = group)) +
+  labs(
+    title = "Residuals vs Trophies (S11) Using Arena 13 S11 Active Players Full Model",
+    subtitle = "trophies ~ dayOfTheMonth + cards + levels + levels^2 + card interactions + day:lvl & lvl^2"
+    ) +
+  theme_bw()
+```
+
+
+## trophy-lvl investigation
+```{r}
+# for end of season matches
+# calculate average level per deck, rounded to nearest 0.25
+levels <- crL[, 101:198]
+
+avgLvlPerDeck <-
+  levels %>%
+    transmute(total = rowSums(levels)) %>%
+    transmute(avg = total/8) %>%
+    mutate(avg = round(avg / 0.25) * 0.25)
+```
+
+```{r}
+df2 <-
+  bind_cols(crL[,2], avgLvlPerDeck) %>%
+    arrange(avg)
+
+df2$avg <- factor(df2$avg)
+df2$avg <- fct_inorder(df2$avg)
+
+df2 %>%
+  ggplot(., aes(x = avg, y = leftstartingtrophies)) +
+  geom_violin() +
+  labs(
+    x = "Average Card Level per Deck",
+    y = "Trophies",
+    title = "Violin Plot of Trophies vs Average Card Level for End-of-Season Matches (S11)"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      vjust = 0.5,
+      face = "bold"    
+      )
+  )
+```
+
+
+# quantile regression (geom)
+```{r}
+df3 <-
+  bind_cols(crL[,2], avgLvlPerDeck) %>%
+    arrange(avg)
+
+df3 %>%
+  ggplot(., aes(x = avg, y = leftstartingtrophies)) +
+  geom_point() +
+  geom_quantile(
+    quantiles = 0.95,
+    method = "rq",
+    color = "blue"
+  ) +
+  geom_quantile(
+    quantiles = 0.95,
+    method = "rqss",
+    color = "red"
+  ) +
+  labs(
+    x = "Average Card Level per Deck",
+    y = "Trophies",
+    title = "Quantile Regression for Trophies vs Average Card Level (End of S11; Active)",
+    subtitle = "Blue = rq, Red = rqss"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      vjust = 0.5,
+      face = "bold"    
+      )
+  )
+```
+
+
+
+
+
+
