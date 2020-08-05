@@ -21,7 +21,7 @@ cr_cards <-
   bind_rows(., tibble(name = "Skeleton Dragons", rarity = "Common"))
 
 # reading in all lines
-cr_full <- read_csv("./research/CR_Project_Tom/data_by_season/clash_royale_matches_season_12_2020-06-01_to_2020-07-05.csv")
+cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_13_2020-07-06_to_2020-08-02.csv")
 
 
 
@@ -101,7 +101,7 @@ cr <-
 
 
 # save df
-write_csv(cr, "cr_allcard_profiles_s12.csv")
+write_csv(cr, "cr_allcard_profiles_s13.csv")
 
 
 

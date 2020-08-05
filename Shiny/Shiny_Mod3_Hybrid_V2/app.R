@@ -9,7 +9,7 @@ library(plotly)
 #library(shinyBS)
 
 # the model
-mod3 <- readRDS("mod_4000_s12_lm_2_strip.rds")
+mod3 <- readRDS("mod_4000_s13_lm_2_strip.rds")
 df_mod3 <- read_csv("df_mod3.csv")
 
 # create empty data frame for predictions
@@ -76,12 +76,12 @@ costCalc <- function(cardName, currentLvl, upgradeLvl) {
 }
 
 # for card icons
-cr_cards_s12 <- read_csv("cr_cards_s12.csv")
-cr_cards_s12 <- 
-  cr_cards_s12 %>%
+cr_cards_s13 <- read_csv("cr_cards_s13.csv")
+cr_cards_s13 <- 
+  cr_cards_s13 %>%
   arrange(name)
 
-cards_s12 <- cr_cards_s12$name
+cards_s13 <- cr_cards_s13$name
 
 # web scraping to extract card info from player tag
 extractCard <- function(tag) {
@@ -115,7 +115,7 @@ trophy_reset <- function(x){
 }
 
 # card profiles for win rate plot
-cardProfiles <- read_csv("cr_allcard_profiles_s12.csv")
+cardProfiles <- read_csv("cr_allcard_profiles_s13.csv")
 
 
 
@@ -243,7 +243,7 @@ ui_list[["Desktop"]] <- fluidPage(
           title = "Info",
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Introduction")))),
           fluidRow(column(12, tags$h4("The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of three main features: deck comparison, upgrade route, and win rate investigation."))),
-          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 7/17/2020")))),
+          fluidRow(column(12, tags$h4(tags$em("Note: This app was last updated on 8/5/2020")))),
           fluidRow(column(12, tags$h4(tags$em(tagList('Have any feedback to help us improve the site? Please visit the Google Form at:', tags$a("https://forms.gle/et4joTJgr151Chqk9", href = "https://forms.gle/et4joTJgr151Chqk9")))))),
           br(),
           fluidRow(column(12, tags$h3(tags$span(style = "color:firebrick", "Deck Comparison")))),
@@ -427,7 +427,7 @@ ui_list[["Mobile"]] <- f7Page(
           title = tags$span(style = "color:firebrick", "Introduction"),
           "The purpose of this app is to investigate the most effective card-upgrade strategy in Clash Royale. It consists of three main features: deck comparison, upgrade route, and win rate investigation.",
           footer = 
-            tags$em("Note: This app was last updated on 7/17/2020.", tagList('And if you have any feedback to help us improve the site, please visit the Google Form at:', f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)))
+            tags$em("Note: This app was last updated on 8/5/2020.", tagList('And if you have any feedback to help us improve the site, please visit the Google Form at:', f7Link(label = "https://forms.gle/et4joTJgr151Chqk9", src = "https://forms.gle/et4joTJgr151Chqk9", external = TRUE)))
         ),
         f7Card(
           title = tags$span(style = "color:firebrick", "Deck Comparison"),
@@ -1555,9 +1555,9 @@ output$card8LvlRSelectorv5 <- function(input, sess) {
 # for card icons of left deck
 output$card1Icon <- function(input, sess) {
   renderUI({
-    for (icon1 in 1:length(cards_s12)) {
-      if (cards_s12[icon1] == input$card1Lv5) {
-        icon1URL <-  cr_cards_s12$iconUrl[icon1]
+    for (icon1 in 1:length(cards_s13)) {
+      if (cards_s13[icon1] == input$card1Lv5) {
+        icon1URL <-  cr_cards_s13$iconUrl[icon1]
       }
     }
     
@@ -1567,9 +1567,9 @@ output$card1Icon <- function(input, sess) {
 
 output$card2Icon <- function(input, sess) {
   renderUI({
-    for (icon2 in 1:length(cards_s12)) {
-      if (cards_s12[icon2] == input$card2Lv5) {
-        icon2URL <-  cr_cards_s12$iconUrl[icon2]
+    for (icon2 in 1:length(cards_s13)) {
+      if (cards_s13[icon2] == input$card2Lv5) {
+        icon2URL <-  cr_cards_s13$iconUrl[icon2]
       }
     }
     
@@ -1579,9 +1579,9 @@ output$card2Icon <- function(input, sess) {
 
 output$card3Icon <- function(input, sess) {
   renderUI({
-    for (icon3 in 1:length(cards_s12)) {
-      if (cards_s12[icon3] == input$card3Lv5) {
-        icon3URL <-  cr_cards_s12$iconUrl[icon3]
+    for (icon3 in 1:length(cards_s13)) {
+      if (cards_s13[icon3] == input$card3Lv5) {
+        icon3URL <-  cr_cards_s13$iconUrl[icon3]
       }
     }
     
@@ -1591,9 +1591,9 @@ output$card3Icon <- function(input, sess) {
 
 output$card4Icon <- function(input, sess) {
   renderUI({
-    for (icon4 in 1:length(cards_s12)) {
-      if (cards_s12[icon4] == input$card4Lv5) {
-        icon4URL <-  cr_cards_s12$iconUrl[icon4]
+    for (icon4 in 1:length(cards_s13)) {
+      if (cards_s13[icon4] == input$card4Lv5) {
+        icon4URL <-  cr_cards_s13$iconUrl[icon4]
       }
     }
     
@@ -1603,9 +1603,9 @@ output$card4Icon <- function(input, sess) {
 
 output$card5Icon <- function(input, sess) {
   renderUI({
-    for (icon5 in 1:length(cards_s12)) {
-      if (cards_s12[icon5] == input$card5Lv5) {
-        icon5URL <-  cr_cards_s12$iconUrl[icon5]
+    for (icon5 in 1:length(cards_s13)) {
+      if (cards_s13[icon5] == input$card5Lv5) {
+        icon5URL <-  cr_cards_s13$iconUrl[icon5]
       }
     }
     
@@ -1615,9 +1615,9 @@ output$card5Icon <- function(input, sess) {
 
 output$card6Icon <- function(input, sess) {
   renderUI({
-    for (icon6 in 1:length(cards_s12)) {
-      if (cards_s12[icon6] == input$card6Lv5) {
-        icon6URL <-  cr_cards_s12$iconUrl[icon6]
+    for (icon6 in 1:length(cards_s13)) {
+      if (cards_s13[icon6] == input$card6Lv5) {
+        icon6URL <-  cr_cards_s13$iconUrl[icon6]
       }
     }
     
@@ -1627,9 +1627,9 @@ output$card6Icon <- function(input, sess) {
 
 output$card7Icon <- function(input, sess) {
   renderUI({
-    for (icon7 in 1:length(cards_s12)) {
-      if (cards_s12[icon7] == input$card7Lv5) {
-        icon7URL <-  cr_cards_s12$iconUrl[icon7]
+    for (icon7 in 1:length(cards_s13)) {
+      if (cards_s13[icon7] == input$card7Lv5) {
+        icon7URL <-  cr_cards_s13$iconUrl[icon7]
       }
     }
     
@@ -1639,9 +1639,9 @@ output$card7Icon <- function(input, sess) {
 
 output$card8Icon <- function(input, sess) {
   renderUI({
-    for (icon8 in 1:length(cards_s12)) {
-      if (cards_s12[icon8] == input$card8Lv5) {
-        icon8URL <-  cr_cards_s12$iconUrl[icon8]
+    for (icon8 in 1:length(cards_s13)) {
+      if (cards_s13[icon8] == input$card8Lv5) {
+        icon8URL <-  cr_cards_s13$iconUrl[icon8]
       }
     }
     
@@ -1654,9 +1654,9 @@ output$card8Icon <- function(input, sess) {
 # for card icons of right deck
 output$card1IconD2 <- function(input, sess) {
   renderUI({
-    for (icon1D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon1D2] == input$card1Rv5) {
-        icon1URLD2 <-  cr_cards_s12$iconUrl[icon1D2]
+    for (icon1D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon1D2] == input$card1Rv5) {
+        icon1URLD2 <-  cr_cards_s13$iconUrl[icon1D2]
       }
     }
     
@@ -1666,9 +1666,9 @@ output$card1IconD2 <- function(input, sess) {
 
 output$card2IconD2 <- function(input, sess) {
   renderUI({
-    for (icon2D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon2D2] == input$card2Rv5) {
-        icon2URLD2 <-  cr_cards_s12$iconUrl[icon2D2]
+    for (icon2D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon2D2] == input$card2Rv5) {
+        icon2URLD2 <-  cr_cards_s13$iconUrl[icon2D2]
       }
     }
     
@@ -1678,9 +1678,9 @@ output$card2IconD2 <- function(input, sess) {
 
 output$card3IconD2 <- function(input, sess) {
   renderUI({
-    for (icon3D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon3D2] == input$card3Rv5) {
-        icon3URLD2 <-  cr_cards_s12$iconUrl[icon3D2]
+    for (icon3D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon3D2] == input$card3Rv5) {
+        icon3URLD2 <-  cr_cards_s13$iconUrl[icon3D2]
       }
     }
     
@@ -1690,9 +1690,9 @@ output$card3IconD2 <- function(input, sess) {
 
 output$card4IconD2 <- function(input, sess) {
   renderUI({
-    for (icon4D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon4D2] == input$card4Rv5) {
-        icon4URLD2 <-  cr_cards_s12$iconUrl[icon4D2]
+    for (icon4D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon4D2] == input$card4Rv5) {
+        icon4URLD2 <-  cr_cards_s13$iconUrl[icon4D2]
       }
     }
     
@@ -1702,9 +1702,9 @@ output$card4IconD2 <- function(input, sess) {
 
 output$card5IconD2 <- function(input, sess) {
   renderUI({
-    for (icon5D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon5D2] == input$card5Rv5) {
-        icon5URLD2 <-  cr_cards_s12$iconUrl[icon5D2]
+    for (icon5D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon5D2] == input$card5Rv5) {
+        icon5URLD2 <-  cr_cards_s13$iconUrl[icon5D2]
       }
     }
     
@@ -1714,9 +1714,9 @@ output$card5IconD2 <- function(input, sess) {
 
 output$card6IconD2 <- function(input, sess) {
   renderUI({
-    for (icon6D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon6D2] == input$card6Rv5) {
-        icon6URLD2 <-  cr_cards_s12$iconUrl[icon6D2]
+    for (icon6D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon6D2] == input$card6Rv5) {
+        icon6URLD2 <-  cr_cards_s13$iconUrl[icon6D2]
       }
     }
     
@@ -1726,9 +1726,9 @@ output$card6IconD2 <- function(input, sess) {
 
 output$card7IconD2 <- function(input, sess) {
   renderUI({
-    for (icon7D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon7D2] == input$card7Rv5) {
-        icon7URLD2 <-  cr_cards_s12$iconUrl[icon7D2]
+    for (icon7D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon7D2] == input$card7Rv5) {
+        icon7URLD2 <-  cr_cards_s13$iconUrl[icon7D2]
       }
     }
     
@@ -1738,9 +1738,9 @@ output$card7IconD2 <- function(input, sess) {
 
 output$card8IconD2 <- function(input, sess) {
   renderUI({
-    for (icon8D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon8D2] == input$card8Rv5) {
-        icon8URLD2 <-  cr_cards_s12$iconUrl[icon8D2]
+    for (icon8D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon8D2] == input$card8Rv5) {
+        icon8URLD2 <-  cr_cards_s13$iconUrl[icon8D2]
       }
     }
     
@@ -2459,9 +2459,9 @@ output$card8LvlRSelectorv5M <- function(input, sess) {
 # for card icons of left deck
 output$card1IconM <- function(input, sess) {
   renderUI({
-    for (icon1 in 1:length(cards_s12)) {
-      if (cards_s12[icon1] == input$card1Lv5M) {
-        icon1URL <-  cr_cards_s12$iconUrl[icon1]
+    for (icon1 in 1:length(cards_s13)) {
+      if (cards_s13[icon1] == input$card1Lv5M) {
+        icon1URL <-  cr_cards_s13$iconUrl[icon1]
       }
     }
     
@@ -2471,9 +2471,9 @@ output$card1IconM <- function(input, sess) {
 
 output$card2IconM <- function(input, sess) {
   renderUI({
-    for (icon2 in 1:length(cards_s12)) {
-      if (cards_s12[icon2] == input$card2Lv5M) {
-        icon2URL <-  cr_cards_s12$iconUrl[icon2]
+    for (icon2 in 1:length(cards_s13)) {
+      if (cards_s13[icon2] == input$card2Lv5M) {
+        icon2URL <-  cr_cards_s13$iconUrl[icon2]
       }
     }
     
@@ -2483,9 +2483,9 @@ output$card2IconM <- function(input, sess) {
 
 output$card3IconM <- function(input, sess) {
   renderUI({
-    for (icon3 in 1:length(cards_s12)) {
-      if (cards_s12[icon3] == input$card3Lv5M) {
-        icon3URL <-  cr_cards_s12$iconUrl[icon3]
+    for (icon3 in 1:length(cards_s13)) {
+      if (cards_s13[icon3] == input$card3Lv5M) {
+        icon3URL <-  cr_cards_s13$iconUrl[icon3]
       }
     }
     
@@ -2495,9 +2495,9 @@ output$card3IconM <- function(input, sess) {
 
 output$card4IconM <- function(input, sess) {
   renderUI({
-    for (icon4 in 1:length(cards_s12)) {
-      if (cards_s12[icon4] == input$card4Lv5M) {
-        icon4URL <-  cr_cards_s12$iconUrl[icon4]
+    for (icon4 in 1:length(cards_s13)) {
+      if (cards_s13[icon4] == input$card4Lv5M) {
+        icon4URL <-  cr_cards_s13$iconUrl[icon4]
       }
     }
     
@@ -2507,9 +2507,9 @@ output$card4IconM <- function(input, sess) {
 
 output$card5IconM <- function(input, sess) {
   renderUI({
-    for (icon5 in 1:length(cards_s12)) {
-      if (cards_s12[icon5] == input$card5Lv5M) {
-        icon5URL <-  cr_cards_s12$iconUrl[icon5]
+    for (icon5 in 1:length(cards_s13)) {
+      if (cards_s13[icon5] == input$card5Lv5M) {
+        icon5URL <-  cr_cards_s13$iconUrl[icon5]
       }
     }
     
@@ -2519,9 +2519,9 @@ output$card5IconM <- function(input, sess) {
 
 output$card6IconM <- function(input, sess) {
   renderUI({
-    for (icon6 in 1:length(cards_s12)) {
-      if (cards_s12[icon6] == input$card6Lv5M) {
-        icon6URL <-  cr_cards_s12$iconUrl[icon6]
+    for (icon6 in 1:length(cards_s13)) {
+      if (cards_s13[icon6] == input$card6Lv5M) {
+        icon6URL <-  cr_cards_s13$iconUrl[icon6]
       }
     }
     
@@ -2531,9 +2531,9 @@ output$card6IconM <- function(input, sess) {
 
 output$card7IconM <- function(input, sess) {
   renderUI({
-    for (icon7 in 1:length(cards_s12)) {
-      if (cards_s12[icon7] == input$card7Lv5M) {
-        icon7URL <-  cr_cards_s12$iconUrl[icon7]
+    for (icon7 in 1:length(cards_s13)) {
+      if (cards_s13[icon7] == input$card7Lv5M) {
+        icon7URL <-  cr_cards_s13$iconUrl[icon7]
       }
     }
     
@@ -2543,9 +2543,9 @@ output$card7IconM <- function(input, sess) {
 
 output$card8IconM <- function(input, sess) {
   renderUI({
-    for (icon8 in 1:length(cards_s12)) {
-      if (cards_s12[icon8] == input$card8Lv5M) {
-        icon8URL <-  cr_cards_s12$iconUrl[icon8]
+    for (icon8 in 1:length(cards_s13)) {
+      if (cards_s13[icon8] == input$card8Lv5M) {
+        icon8URL <-  cr_cards_s13$iconUrl[icon8]
       }
     }
     
@@ -2558,9 +2558,9 @@ output$card8IconM <- function(input, sess) {
 # for card icons of right deck
 output$card1IconD2M <- function(input, sess) {
   renderUI({
-    for (icon1D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon1D2] == input$card1Rv5M) {
-        icon1URLD2 <-  cr_cards_s12$iconUrl[icon1D2]
+    for (icon1D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon1D2] == input$card1Rv5M) {
+        icon1URLD2 <-  cr_cards_s13$iconUrl[icon1D2]
       }
     }
     
@@ -2570,9 +2570,9 @@ output$card1IconD2M <- function(input, sess) {
 
 output$card2IconD2M <- function(input, sess) {
   renderUI({
-    for (icon2D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon2D2] == input$card2Rv5M) {
-        icon2URLD2 <-  cr_cards_s12$iconUrl[icon2D2]
+    for (icon2D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon2D2] == input$card2Rv5M) {
+        icon2URLD2 <-  cr_cards_s13$iconUrl[icon2D2]
       }
     }
     
@@ -2582,9 +2582,9 @@ output$card2IconD2M <- function(input, sess) {
 
 output$card3IconD2M <- function(input, sess) {
   renderUI({
-    for (icon3D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon3D2] == input$card3Rv5M) {
-        icon3URLD2 <-  cr_cards_s12$iconUrl[icon3D2]
+    for (icon3D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon3D2] == input$card3Rv5M) {
+        icon3URLD2 <-  cr_cards_s13$iconUrl[icon3D2]
       }
     }
     
@@ -2594,9 +2594,9 @@ output$card3IconD2M <- function(input, sess) {
 
 output$card4IconD2M <- function(input, sess) {
   renderUI({
-    for (icon4D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon4D2] == input$card4Rv5M) {
-        icon4URLD2 <-  cr_cards_s12$iconUrl[icon4D2]
+    for (icon4D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon4D2] == input$card4Rv5M) {
+        icon4URLD2 <-  cr_cards_s13$iconUrl[icon4D2]
       }
     }
     
@@ -2606,9 +2606,9 @@ output$card4IconD2M <- function(input, sess) {
 
 output$card5IconD2M <- function(input, sess) {
   renderUI({
-    for (icon5D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon5D2] == input$card5Rv5M) {
-        icon5URLD2 <-  cr_cards_s12$iconUrl[icon5D2]
+    for (icon5D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon5D2] == input$card5Rv5M) {
+        icon5URLD2 <-  cr_cards_s13$iconUrl[icon5D2]
       }
     }
     
@@ -2618,9 +2618,9 @@ output$card5IconD2M <- function(input, sess) {
 
 output$card6IconD2M <- function(input, sess) {
   renderUI({
-    for (icon6D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon6D2] == input$card6Rv5M) {
-        icon6URLD2 <-  cr_cards_s12$iconUrl[icon6D2]
+    for (icon6D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon6D2] == input$card6Rv5M) {
+        icon6URLD2 <-  cr_cards_s13$iconUrl[icon6D2]
       }
     }
     
@@ -2630,9 +2630,9 @@ output$card6IconD2M <- function(input, sess) {
 
 output$card7IconD2M <- function(input, sess) {
   renderUI({
-    for (icon7D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon7D2] == input$card7Rv5M) {
-        icon7URLD2 <-  cr_cards_s12$iconUrl[icon7D2]
+    for (icon7D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon7D2] == input$card7Rv5M) {
+        icon7URLD2 <-  cr_cards_s13$iconUrl[icon7D2]
       }
     }
     
@@ -2642,9 +2642,9 @@ output$card7IconD2M <- function(input, sess) {
 
 output$card8IconD2M <- function(input, sess) {
   renderUI({
-    for (icon8D2 in 1:length(cards_s12)) {
-      if (cards_s12[icon8D2] == input$card8Rv5M) {
-        icon8URLD2 <-  cr_cards_s12$iconUrl[icon8D2]
+    for (icon8D2 in 1:length(cards_s13)) {
+      if (cards_s13[icon8D2] == input$card8Rv5M) {
+        icon8URLD2 <-  cr_cards_s13$iconUrl[icon8D2]
       }
     }
     

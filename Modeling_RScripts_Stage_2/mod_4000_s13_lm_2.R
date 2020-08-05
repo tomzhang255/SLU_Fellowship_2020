@@ -21,7 +21,7 @@ cr_cards <-
   bind_rows(., tibble(name = "Skeleton Dragons", rarity = "Common"))
 
 # reading in all lines
-cr_full <- read_csv("./research/CR_Project_Tom/data_by_season/clash_royale_matches_season_12_2020-06-01_to_2020-07-05.csv")
+cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_13_2020-07-06_to_2020-08-02.csv")
 
 
 
@@ -151,21 +151,21 @@ f <-
 
 
 # fit model
-mod_4000_s12_lm_2 <- lm(formula = f, data = cr)
+mod_4000_s13_lm_2 <- lm(formula = f, data = cr)
 
-saveRDS(mod_4000_s12_lm_2, "mod_4000_s12_lm_2.rds")
+saveRDS(mod_4000_s13_lm_2, "mod_4000_s13_lm_2.rds")
 
 
 
 # strip model - reduce size
 library(strip)
-lmc <- strip(mod_4000_s12_lm_2, keep = "predict")
-saveRDS(lmc, "mod_4000_s12_lm_2_strip.rds")
+lmc <- strip(mod_4000_s13_lm_2, keep = "predict")
+saveRDS(lmc, "mod_4000_s13_lm_2_strip.rds")
 
 
 
 # save df as well
-write_csv(cr, "mod_4000_s12_lm_2_data.csv")
+write_csv(cr, "mod_4000_s13_lm_2_data.csv")
 
 
 
@@ -173,8 +173,8 @@ write_csv(cr, "mod_4000_s12_lm_2_data.csv")
 
 # Calculate the quantiles on the residuals for each “trophy group”
 dfQuant <- tibble(
-  predRounded = round(mod_4000_s12_lm_2$fitted.values / 100) * 100,
-  resid = mod_4000_s12_lm_2$residuals
+  predRounded = round(mod_4000_s13_lm_2$fitted.values / 100) * 100,
+  resid = mod_4000_s13_lm_2$residuals
 ) %>%
   group_by(predRounded) %>%
   summarise(
