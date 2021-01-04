@@ -1,0 +1,13 @@
+name: Shiny_Mod3_Hybrid_V2_S14
+title: Shiny_Mod3_Hybrid_V2_S14
+username:
+account: tomzhang0719
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2793478
+bundleId: 3620175
+url: https://tomzhang0719.shinyapps.io/Shiny_Mod3_Hybrid_V2_S14/
+when: 1599857618.1384
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: cr_allcard_profiles_s14.R|mod_4000_s14_lm_2.R|README.md
