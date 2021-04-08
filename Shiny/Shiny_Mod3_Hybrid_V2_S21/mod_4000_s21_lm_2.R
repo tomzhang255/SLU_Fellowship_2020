@@ -27,7 +27,7 @@ cr_cards <-
   bind_rows(., tibble(name = "Mother Witch", rarity = "Legendary"))
   
 # reading in all lines
-cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_20_2021-02-01_to_2021-02-28.csv")
+cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_21_2021-03-01_to_2021-03-29.csv")
 
 # combine left and right tags
 df_left <- cr_full %>% select(1:7) %>% mutate()
@@ -155,21 +155,21 @@ f <-
 
 
 # fit model
-mod_4000_s20_lm_2 <- lm(formula = f, data = cr)
+mod_4000_s21_lm_2 <- lm(formula = f, data = cr)
 
-saveRDS(mod_4000_s20_lm_2, "mod_4000_s20_lm_2.rds")
+saveRDS(mod_4000_s21_lm_2, "mod_4000_s21_lm_2.rds")
 
 
 
 # strip model - reduce size
 library(strip)
-lmc <- strip(mod_4000_s20_lm_2, keep = "predict")
-saveRDS(lmc, "mod_4000_s20_lm_2_strip.rds")
+lmc <- strip(mod_4000_s21_lm_2, keep = "predict")
+saveRDS(lmc, "mod_4000_s21_lm_2_strip.rds")
 
 
 
 # save df as well
-write_csv(cr, "mod_4000_s20_lm_2_data.csv")
+write_csv(cr, "mod_4000_s21_lm_2_data.csv")
 
 
 
@@ -177,8 +177,8 @@ write_csv(cr, "mod_4000_s20_lm_2_data.csv")
 
 # Calculate the quantiles on the residuals for each “trophy group”
 dfQuant <- tibble(
-  predRounded = round(mod_4000_s20_lm_2$fitted.values / 100) * 100,
-  resid = mod_4000_s20_lm_2$residuals
+  predRounded = round(mod_4000_s21_lm_2$fitted.values / 100) * 100,
+  resid = mod_4000_s21_lm_2$residuals
 ) %>%
   group_by(predRounded) %>%
   summarise(

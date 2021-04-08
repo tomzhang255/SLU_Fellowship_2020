@@ -27,7 +27,7 @@ cr_cards <-
   bind_rows(., tibble(name = "Mother Witch", rarity = "Legendary"))
 
 # reading in all lines
-cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_20_2021-02-01_to_2021-02-28.csv")
+cr_full <- read_csv("./research/clash_royale/data_by_season/clash_royale_matches_season_21_2021-03-01_to_2021-03-29.csv")
 
 
 
@@ -107,7 +107,7 @@ cr <-
 
 
 # save df
-write_csv(cr, "cr_allcard_profiles_s20.csv")
+write_csv(cr, "cr_allcard_profiles_s21.csv")
 
 
 
